@@ -275,10 +275,12 @@
      MOBILE  (≤ 900px layout stack, ≤ 600px phone)
      ══════════════════════════════════════════════════ */
 
-  /* Rail moves above form on mobile so agents see score while filling */
+  /* On mobile: identity first (so you know whose scorecard), then live snapshot, then the form */
   @media (max-width:900px){
-    .layout{display:flex;flex-direction:column;}
-    .rail{order:-1;position:static;}
+    .layout{display:flex;flex-direction:column;gap:0;}
+    .layout > div{display:contents;}
+    .who-when{order:-2;}
+    .rail{order:-1;position:static;margin-bottom:22px;}
     .rail .card{margin-bottom:0;}
   }
 
@@ -768,7 +770,7 @@
     <!-- LEFT: inputs -->
     <div>
       <!-- Identity -->
-      <section class="card">
+      <section class="card who-when">
         <div class="eyebrow"><span class="dot"></span><span>Who and when</span></div>
         <div class="id-grid" style="margin-top:14px;">
           <div>
