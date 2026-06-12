@@ -282,6 +282,21 @@ function coCredit(c){
     .filter(function(s){ return s && s.toLowerCase()!=="none"; });
 }
 function firmShare(agent){ return FIRM_SHARE[agent]!=null ? FIRM_SHARE[agent] : 1.0; }
+// Money split. Commission AND AUM on a case are distributed by who produced it
+// (the submitting_agent). Salaried associates (Jesus, Maryurie) never receive money;
+// it pools 50/50 to the two partners. Nelson keeps 50% of his own; partners split the
+// rest 25/25. Activity COUNTS are unaffected by this (see activityStats).
+const PARTNER_A = "Carlos A Temperan", PARTNER_B = "Alejandro Mendieta", NELSON = "Nelson Mompierre Jr.";
+function moneyShare(person, producer){
+  if(producer===NELSON){
+    if(person===NELSON) return 0.5;
+    if(person===PARTNER_A || person===PARTNER_B) return 0.25;
+    return 0;
+  }
+  // every other producer (partner or salaried) pools 50/50 to the two partners
+  if(person===PARTNER_A || person===PARTNER_B) return 0.5;
+  return 0;
+}
 function ymd(v){ return String(v||"").slice(0,10); }
 
 /* ── JSONP fetch ─────────────────────────────────────────── */
@@ -337,15 +352,13 @@ function buildControls(){
 }
 
 /* ── Case stats for a set of cases ───────────────────────── */
-function caseStats(cases, week, person){
+// Activity COUNTS for a person (their own + co-credited cases). No dollars here —
+// counts are recognition and everyone who worked the case gets them.
+function activityStats(cases, week){
   const mix = {}; PRODUCTS.forEach(p => mix[p]={op:0,subN:0,sub:0,clN:0,cl:0});
-  let opp=0,nbSub=0,nbClosed=0,revSub=0,revClosed=0,fycSub=0,aumSub=0,premClosed=0,potential=0,fycClosed=0,aumTotal=0;
+  let opp=0,nbSub=0,nbClosed=0,potential=0;
   cases.forEach(function(c){
-    const amt=num(c.amount), aum=num(c.aum), prod=c.product, src=c.source;
-    const rev = rowRevenue(prod, amt);  // product-aware revenue (annuity = 4.8% of deposit)
-    // Co-credited teammates (not the closer) get the activity COUNTS for recognition
-    // but none of the dollars. Firm view (no person) and the closer get full dollars.
-    const dollars = !person || person === c.submitting_agent;
+    const prod=c.product, src=c.source;
     // Attribute each milestone to the week it actually happened. With no week
     // filter, fall back to the case's current state (whole-dataset contexts).
     const ow = c.opened_week || ymd(c.week_ending);
@@ -355,12 +368,38 @@ function caseStats(cases, week, person){
     const subHere    = week ? (sw===week) : (c.state==="Submitted");
     const closedHere = week ? (cw===week) : (c.state==="Closed");
     if(openedHere){ opp++; if(SOURCE_PREMIUM[src]) potential += SOURCE_PREMIUM[src]; if(mix[prod]) mix[prod].op++; }
-    if(subHere){ nbSub++; if(mix[prod]) mix[prod].subN++;
-      if(dollars){ revSub+=rev; fycSub+=rowFyc(prod,amt); aumSub+=aum; if(mix[prod]) mix[prod].sub+=rev; } }
-    if(closedHere){ nbClosed++; if(mix[prod]) mix[prod].clN++;
-      if(dollars){ revClosed+=rev; fycClosed+=rowFyc(prod,amt); premClosed += rowPremium(prod,amt) + aum*PREMIUM_PER_AUM; aumTotal += aum; if(mix[prod]) mix[prod].cl+=rev; } }
+    if(subHere){ nbSub++; if(mix[prod]) mix[prod].subN++; }
+    if(closedHere){ nbClosed++; if(mix[prod]) mix[prod].clN++; }
   });
-  return {mix,opp,nbSub,nbClosed,revSub,revClosed,fycSub,aumSub,premClosed,potential,fycClosed,aumTotal};
+  return {mix,opp,nbSub,nbClosed,potential,revSub:0,revClosed:0,fycSub:0,aumSub:0,premClosed:0,fycClosed:0,aumTotal:0};
+}
+
+// Pooled DOLLARS for a person. Walks every case in the week and gives the person
+// their partner-split share of each (moneyShare). person==null = firm view (full money).
+function moneyStats(week, person){
+  const mix = {}; PRODUCTS.forEach(p => mix[p]={sub:0,cl:0});
+  let revSub=0,revClosed=0,fycSub=0,aumSub=0,premClosed=0,fycClosed=0,aumTotal=0;
+  casesFor(week, null).forEach(function(c){
+    const share = person==null ? 1 : moneyShare(person, c.submitting_agent);
+    if(!share) return;
+    const amt=num(c.amount), aum=num(c.aum), prod=c.product;
+    const rev = rowRevenue(prod, amt), fyc = rowFyc(prod, amt);
+    const subHere    = week ? ((c.submitted_week||"")===week) : (c.state==="Submitted");
+    const closedHere = week ? ((c.closed_week||"")===week)    : (c.state==="Closed");
+    if(subHere){ revSub+=rev*share; fycSub+=fyc*share; aumSub+=aum*share; if(mix[prod]) mix[prod].sub+=rev*share; }
+    if(closedHere){ revClosed+=rev*share; fycClosed+=fyc*share; premClosed+=(rowPremium(prod,amt)+aum*PREMIUM_PER_AUM)*share; aumTotal+=aum*share; if(mix[prod]) mix[prod].cl+=rev*share; }
+  });
+  return {mix,revSub,revClosed,fycSub,aumSub,premClosed,fycClosed,aumTotal};
+}
+
+// Merge a person's activity counts with their pooled dollars into one stats object.
+function personStats(week, person){
+  const st = activityStats(casesFor(week, person), week);
+  const mon = moneyStats(week, person);
+  PRODUCTS.forEach(function(p){ st.mix[p].sub = mon.mix[p].sub; st.mix[p].cl = mon.mix[p].cl; });
+  st.revSub=mon.revSub; st.revClosed=mon.revClosed; st.fycSub=mon.fycSub;
+  st.fycClosed=mon.fycClosed; st.aumSub=mon.aumSub; st.aumTotal=mon.aumTotal; st.premClosed=mon.premClosed;
+  return st;
 }
 
 function casesFor(week, person){
@@ -423,7 +462,7 @@ function renderClub(week){
 
 /* ── My Week goals + four numbers for a person ───────────── */
 function renderSnapshot(person, week, mode){
-  const st = caseStats(casesFor(week, person), week, person);
+  const st = personStats(week, person);
   const wk = weeklyFor(week, person);
   const g = AGENT_GOALS[person] || {};
   const fmtc = (v,t)=> v+" / "+t;
@@ -517,7 +556,7 @@ function renderCasesList(cases){
 
 /* ── Team report ─────────────────────────────────────────── */
 function renderTeam(week){
-  const all = caseStats(casesFor(week, null), week, null);
+  const all = personStats(week, null);
   const totals = '<section class="card"><div class="eyebrow"><span class="dot"></span><span>Team totals this week</span></div>'+
     '<div class="mw-nums">'+
       '<div class="mw-num"><span>Open opportunities</span><b>'+all.opp+'</b></div>'+
@@ -527,7 +566,7 @@ function renderTeam(week){
     '</div></section>';
   // Leaderboard
   const lead = PEOPLE.map(function(p){
-    const st = caseStats(casesFor(week, p), week, p);
+    const st = personStats(week, p);
     const wk = weeklyFor(week, p);
     const g = AGENT_GOALS[p]||{};
     const goalsHit = [
