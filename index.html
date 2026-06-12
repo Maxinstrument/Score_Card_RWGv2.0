@@ -976,6 +976,7 @@
     <div class="tc-add">
       <h3 class="tc-add-h">Add a case to the shared store</h3>
       <div class="tc-submitter-row partner-only"><label for="tcSubmitter">Credit this case to (the agent you worked it with):</label><select id="tcSubmitter"></select></div>
+      <div class="tc-submitter-row"><label for="tcOpenedWith">Opened with (shared credit, optional &mdash; hold Ctrl/Cmd to pick several):</label><select id="tcOpenedWith" multiple size="3"></select></div>
       <div class="tc-add-grid">
         <input type="text" id="tcClient" placeholder="Client name" autocomplete="off">
         <select id="tcSource"></select>
@@ -990,6 +991,7 @@
         <div class="tc-mc"><input type="number" id="tcAum" min="0" step="1" inputmode="decimal" placeholder="AUM"></div>
         <button type="button" id="tcAddBtn">Add case</button><button type="button" id="tcCancelBtn" style="display:none;">Cancel</button>
       </div>
+      <div id="tcAmountHint" class="tc-status"></div>
       <div id="tcAddStatus" class="tc-status"></div>
     </div>
   </section>
@@ -1085,6 +1087,12 @@ const PREMIUM_FROM_REVENUE = 0.5;
 const CLOSED_WITH = ["None","Jesus Zamora","Nelson Mompierre Jr.","Maryurie Estrada","Other"];
 function rowFyc(prodId, amt){ return FYC_PRODUCTS.indexOf(prodId)>=0 ? amt : 0; }
 function rowPremium(prodId, amt){ return PREMIUM_PRODUCTS.indexOf(prodId)>=0 ? amt*PREMIUM_FROM_REVENUE : 0; }
+// Annuity: the $ Amount entered is the deposit placed, not the commission.
+// Revenue = advisor payout (80%) of gross commission (6% of deposit) = 4.8%.
+// (Annuity is excluded from FYC/Chairman's; it is not in FYC_PRODUCTS or PREMIUM_PRODUCTS.)
+const ANNUITY_COMMISSION_RATE = 0.06, ANNUITY_PAYOUT_RATE = 0.80;
+const ANNUITY_REVENUE_RATE = ANNUITY_COMMISSION_RATE * ANNUITY_PAYOUT_RATE; // 0.048
+function rowRevenue(prodId, amt){ return prodId==="annuity" ? amt*ANNUITY_REVENUE_RATE : amt; }
 
 /* Agent weekly minimums (editable in one place).
    Premium math: monthly premium = Amount / 6; AUM / 500 = premium-equivalent. */
@@ -1520,16 +1528,17 @@ function recalcFromCases(){
     aumTotal += aum;
     const rf = prodId ? rowFyc(prodId, amt) : 0;
     const rp = prodId ? rowPremium(prodId, amt) : 0;
+    const rrev = prodId ? rowRevenue(prodId, amt) : amt;  // annuity = 4.8% of deposit
     if(rf >= CONFIG.BIG_CASE_FYC) bigCaseCount++;
     if(st==="Submitted"){ premiumWritten += rp; premiumPipeline += rf; fycSubmitted += rf; aumSubmitted += aum; }
     if(st==="Opened")   { premiumPipeline += rf; }
     if(st==="Closed")   { fycClosed += rf; closedFycSum += rf; closedFycN++;
-                          revenueClosed += amt; premiumEquivClosed += amt*PREMIUM_PER_AMOUNT + aum*PREMIUM_PER_AUM; }
+                          revenueClosed += rrev; premiumEquivClosed += rp + aum*PREMIUM_PER_AUM; }
 
     if(prodId){
       if(st==="Opened")    totals[prodId].count++;
-      if(st==="Submitted"){ totals[prodId].submittedCount++; totals[prodId].sub += amt; }
-      if(st==="Closed")   { totals[prodId].closedCount++;   totals[prodId].clo += amt; }
+      if(st==="Submitted"){ totals[prodId].submittedCount++; totals[prodId].sub += rrev; }
+      if(st==="Closed")   { totals[prodId].closedCount++;   totals[prodId].clo += rrev; }
     }
   });
 
@@ -1565,7 +1574,7 @@ function recalcFromCases(){
     const f = pid ? rowFyc(pid, a) : 0;
     if(s==="Opened") teamOpen++;
     if(s==="Submitted"){ teamFycSub += f; teamAumSub += au; }
-    if(s==="Closed") teamRevClosed += a;
+    if(s==="Closed") teamRevClosed += (pid ? rowRevenue(pid, a) : a);
   });
   GOALS.teamOpen = teamOpen; GOALS.teamFycSub = teamFycSub;
   GOALS.teamAumSub = teamAumSub; GOALS.teamRevClosed = teamRevClosed;
@@ -1744,6 +1753,25 @@ function postCase(payload, done){
   if(submitterSel){
     submitterSel.innerHTML = Object.keys(ROLE_MAP).map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join("");
   }
+  // Co-credit: who else was in the meeting and shares activity recognition (not the dollars).
+  const openedWithSel = document.getElementById("tcOpenedWith");
+  if(openedWithSel){
+    openedWithSel.innerHTML = Object.keys(ROLE_MAP).map(function(n){ return '<option value="'+n+'">'+n+'</option>'; }).join("");
+  }
+  // Annuity: $ Amount is the deposit; show the computed revenue (4.8%) as a live hint.
+  const amtHint = document.getElementById("tcAmountHint");
+  function updateAmtHint(){
+    if(!amtHint) return;
+    const isAnn = prodSel && prodSel.value==="annuity";
+    if(isAnn){
+      const amt = parseFloat(document.getElementById("tcAmount").value)||0;
+      amtHint.textContent = "Annuity: enter the amount placed (deposit). Revenue counted = "
+        + money(Math.round(amt*ANNUITY_REVENUE_RATE)) + " (4.8%). Does not count toward Chairman's.";
+    } else { amtHint.textContent = ""; }
+  }
+  if(prodSel) prodSel.addEventListener("change", updateAmtHint);
+  var tcAmountEl0 = document.getElementById("tcAmount");
+  if(tcAmountEl0) tcAmountEl0.addEventListener("input", updateAmtHint);
   function syncSubmitterDefault(){
     if(submitterSel && !editingId){
       const a = document.getElementById("agent").value;
@@ -1845,6 +1873,12 @@ function postCase(payload, done){
     document.getElementById("tcAmount").value = c.amount || "";
     document.getElementById("tcAum").value    = c.aum || "";
     if(submitterSel && c.submitting_agent) submitterSel.value = c.submitting_agent;
+    if(openedWithSel){
+      const names = String(c.agent_involved||"").split(/[;,]/).map(function(s){ return s.trim(); })
+        .filter(function(s){ return s && s.toLowerCase()!=="none"; });
+      Array.prototype.forEach.call(openedWithSel.options, function(o){ o.selected = names.indexOf(o.value)>=0; });
+    }
+    updateAmtHint();
     editingId = c.record_id;
     editingCase = c;
     document.getElementById("tcAddBtn").textContent = "Save changes";
@@ -1916,6 +1950,8 @@ function postCase(payload, done){
     document.getElementById("tcAum").value="";
     srcSel.value=""; prodSel.value=""; document.getElementById("tcState").value="Opened";
     if(submitterSel){ const a=document.getElementById("agent").value; if(a) submitterSel.value=a; }
+    if(openedWithSel){ Array.prototype.forEach.call(openedWithSel.options, function(o){ o.selected=false; }); }
+    if(amtHint) amtHint.textContent="";
     document.getElementById("tcAddBtn").textContent="Add case";
     document.getElementById("tcCancelBtn").style.display="none";
   }
@@ -1946,6 +1982,11 @@ function postCase(payload, done){
     if(document.body.classList.contains("role-partner") && submitterSel && submitterSel.value){ submitter = submitterSel.value; }
     else if(isEdit && orig && orig.submitting_agent){ submitter = orig.submitting_agent; }
     else { submitter = agent; }
+    // Shared-credit teammates (exclude the closer themselves). Empty -> "None".
+    const ownNames = openedWithSel
+      ? Array.prototype.slice.call(openedWithSel.selectedOptions).map(function(o){ return o.value; })
+          .filter(function(v){ return v && v!==submitter; })
+      : [];
     const payload = {
       action: isEdit ? "updateCase" : "createCase", record_id:id,
       week_ending:week,
@@ -1956,7 +1997,7 @@ function postCase(payload, done){
       state:document.getElementById("tcState").value,
       amount:parseFloat(document.getElementById("tcAmount").value)||0,
       aum:parseFloat(document.getElementById("tcAum").value)||0,
-      agent_involved: (isEdit && orig && orig.agent_involved) ? orig.agent_involved : "None"
+      agent_involved: ownNames.length ? ownNames.join("; ") : "None"
     };
     addStatus.textContent = isEdit ? "Updating..." : "Saving...";
     postCase(payload, function(ok){
