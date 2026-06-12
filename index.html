@@ -1093,6 +1093,11 @@ function rowPremium(prodId, amt){ return PREMIUM_PRODUCTS.indexOf(prodId)>=0 ? a
 const ANNUITY_COMMISSION_RATE = 0.06, ANNUITY_PAYOUT_RATE = 0.80;
 const ANNUITY_REVENUE_RATE = ANNUITY_COMMISSION_RATE * ANNUITY_PAYOUT_RATE; // 0.048
 function rowRevenue(prodId, amt){ return prodId==="annuity" ? amt*ANNUITY_REVENUE_RATE : amt; }
+// Teammates sharing activity credit on a case (parsed from agent_involved; "None"/blank ignored).
+function caseCoCredit(c){
+  return String(c.agent_involved||"").split(/[;,]/).map(function(s){return s.trim();})
+    .filter(function(s){ return s && s.toLowerCase()!=="none"; });
+}
 
 /* Agent weekly minimums (editable in one place).
    Premium math: monthly premium = Amount / 6; AUM / 500 = premium-equivalent. */
@@ -1507,7 +1512,8 @@ $("btnSubmit").addEventListener("click", function(){
    ------------------------------------------------------------ */
 function recalcFromCases(){
   const agent = document.getElementById("agent").value;
-  const mine = (window.currentTeamCases || []).filter(function(c){ return c.submitting_agent === agent; });
+  // Cases credited to this agent: ones they own (closer) plus ones they were co-credited on (Opened with).
+  const mine = (window.currentTeamCases || []).filter(function(c){ return c.submitting_agent === agent || caseCoCredit(c).indexOf(agent) >= 0; });
 
   const totals = {};
   TYPES.forEach(function(t){ totals[t.id] = {count:0, submittedCount:0, sub:0, closedCount:0, clo:0}; });
