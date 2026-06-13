@@ -354,9 +354,20 @@ function caseStats(cases, week){
     const ow = c.opened_week || ymd(c.week_ending);
     const sw = c.submitted_week || "";
     const cw = c.closed_week || "";
-    const openedHere = week ? (ow===week) : (c.state==="Opened");
-    const subHere    = week ? (sw===week) : (c.state==="Submitted");
-    const closedHere = week ? (cw===week) : (c.state==="Closed");
+    // Count a case in exactly ONE bucket: the furthest stage it reached. In a week
+    // view that is the furthest milestone that landed in this week; in the all-time
+    // view it is the case's current state. So a submitted case is never also counted
+    // as opened, and a closed case is never also counted as opened or submitted.
+    let openedHere=false, subHere=false, closedHere=false;
+    if(week){
+      if(cw===week) closedHere=true;
+      else if(sw===week) subHere=true;
+      else if(ow===week) openedHere=true;
+    } else {
+      openedHere = c.state==="Opened";
+      subHere    = c.state==="Submitted";
+      closedHere = c.state==="Closed";
+    }
     if(openedHere){ opp++; if(SOURCE_PREMIUM[src]) potential += SOURCE_PREMIUM[src]; if(mix[prod]) mix[prod].op++; }
     if(subHere){ nbSub++; revSub+=rev; fycSub+=rowFyc(prod,amt); aumSub+=aum; if(mix[prod]){mix[prod].subN++; mix[prod].sub+=rev;} }
     if(closedHere){ nbClosed++; revClosed+=rev; fycClosed+=rowFyc(prod,amt); premClosed += rowPremium(prod,amt) + aum*PREMIUM_PER_AUM; aumTotal += aum; if(mix[prod]){mix[prod].clN++; mix[prod].cl+=rev;} }
