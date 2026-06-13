@@ -239,8 +239,11 @@ const REPORT_PASSPHRASE = "chairman2026";
 
 const PEOPLE = ["Carlos A Temperan","Alejandro Mendieta","Jesus Zamora","Nelson Mompierre Jr.","Maryurie Estrada"];
 const SPRINT = { goalTotal:1000000, weeks:25, startingFyc:160000, start:"2026-06-08" };
-const PACE_PER_WEEK = (SPRINT.goalTotal - SPRINT.startingFyc) / SPRINT.weeks; // 33,600
 const WEEKLY_PREMIUM_TARGET = 6000;
+const COMMISSION_RATE = 0.50;  // FYC as a share of annualized premium
+// Pace = FYC from hitting the weekly premium target ($6k x 12 x 50% = $36,000/wk),
+// matching the agent form. (Goal-based pace would be ($1M-$160k)/25 = $33,600/wk.)
+const PACE_PER_WEEK = WEEKLY_PREMIUM_TARGET * 12 * COMMISSION_RATE; // 36,000
 
 const FYC_PRODUCTS     = ["Whole Life","Term","Disability"];
 const PREMIUM_PER_AMOUNT = 1/6, PREMIUM_PER_AUM = 1/500;
