@@ -408,12 +408,13 @@ function renderClub(week){
   const ytd = clubYtd();
   const pace = SPRINT.startingFyc + PACE_PER_WEEK * weeksElapsed();
   const gap = ytd - pace;
-  // This week (partner pool)
+  // This week (partner pool). One bucket per case by furthest stage: a case that
+  // closed this week counts as FYC only, not also as premium written.
   let weekFyc=0, weekPrem=0;
   casesFor(week, null).forEach(function(c){
     const sh = firmShare(c.submitting_agent);
-    if((c.closed_week||"")===week)    weekFyc  += rowFyc(c.product, num(c.amount)) * sh;
-    if((c.submitted_week||"")===week) weekPrem += rowPremium(c.product, num(c.amount)) * sh;
+    if((c.closed_week||"")===week)         weekFyc  += rowFyc(c.product, num(c.amount)) * sh;
+    else if((c.submitted_week||"")===week) weekPrem += rowPremium(c.product, num(c.amount)) * sh;
   });
   const pct = Math.min(100, Math.round(100*ytd/SPRINT.goalTotal));
   const premPct = Math.min(100, Math.round(100*weekPrem/WEEKLY_PREMIUM_TARGET));
