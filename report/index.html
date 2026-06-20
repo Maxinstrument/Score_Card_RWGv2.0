@@ -191,7 +191,6 @@
   .cases-btn:hover{ background:var(--field); color:var(--navy); }
   .cases-btn.on{ background:var(--navy); color:#fff; border-style:solid; border-color:var(--navy); }
   .cases-count{ font-size:12px; color:var(--muted); margin-left:auto; }
-  .cases-total{ font-size:12px; font-weight:700; color:var(--navy); white-space:nowrap; background:rgba(194,161,77,.14); border:1px solid rgba(194,161,77,.4); border-radius:8px; padding:4px 10px; }
   .cs-filter{ cursor:pointer; user-select:none; white-space:nowrap; }
   .cs-filter:hover{ color:var(--navy); }
   .cs-funnel{ font-size:9px; opacity:.5; }
@@ -741,13 +740,9 @@ function renderCasesPrint(cases){
     var ag = '<div class="cs-agent-main">'+esc(c.submitting_agent||"")+'</div>'+co.map(function(n){ return '<div class="cs-agent-sub">'+esc(n)+'</div>'; }).join("");
     return '<tr><td>'+esc(c.client_name)+'</td><td>'+esc(c.source)+'</td><td>'+esc(c.product)+'</td><td>'+esc(c.state)+'</td><td>'+money(num(c.amount))+'</td><td>'+(num(c.aum)?money(num(c.aum)):'')+'</td><td>'+ag+'</td></tr>';
   }).join("");
-  var tAmt = cases.reduce(function(s,c){ return s + num(c.amount); }, 0);
-  var tAum = cases.reduce(function(s,c){ return s + num(c.aum); }, 0);
   return head+'<section class="card"><div class="tscroll"><table class="grid">'+
     '<thead><tr><th>Client</th><th>Source</th><th>Product</th><th>State</th><th>$ Amount</th><th>AUM</th><th>Agent</th></tr></thead>'+
-    '<tbody>'+rows+'</tbody>'+
-    '<tfoot><tr><td colspan="4">TOTAL ('+cases.length+' case'+(cases.length!==1?'s':'')+')</td><td>'+money(tAmt)+'</td><td>'+money(tAum)+'</td><td></td></tr></tfoot>'+
-    '</table></div></section>';
+    '<tbody>'+rows+'</tbody></table></div></section>';
 }
 function printCases(){
   var body=document.getElementById("report-body");
@@ -935,8 +930,6 @@ function renderCasesList(cases){
     });
   }
   casesDisplayed = view;
-  var totAmt = view.reduce(function(s,c){ return s + num(c.amount); }, 0);
-  var totAum = view.reduce(function(s,c){ return s + num(c.aum); }, 0);
   var toolbar = '<div class="cases-bar">'+
     '<button type="button" class="cases-btn" id="caseAddBtn">+ Add case</button>'+
     '<button type="button" class="cases-btn'+(casesViewAll?' on':'')+'" id="caseViewAllBtn">'+(casesViewAll?"Show this week only":"View all cases")+'</button>'+
@@ -944,7 +937,6 @@ function renderCasesList(cases){
     '<button type="button" class="cases-btn" id="casePrintBtn">&#128424; Print</button>'+
     (anyCaseFilter()?'<button type="button" class="cases-btn" id="caseClearBtn">&#10005; Clear filters</button>':'')+
     '<span class="cases-count">'+view.length+' case'+(view.length!==1?'s':'')+(anyCaseFilter()?' (filtered)':'')+(casesViewAll?' · all weeks':'')+'</span>'+
-    '<span class="cases-total">TOTAL &nbsp; Amount '+money(totAmt)+' &nbsp;&middot;&nbsp; AUM '+money(totAum)+'</span>'+
   '</div>';
   var th = CASES_COLS.map(function(col){
     var arrow = (casesSortKey===col.key) ? (casesSortDir>0?' ▲':' ▼') : '';
