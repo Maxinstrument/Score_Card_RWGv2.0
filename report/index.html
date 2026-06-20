@@ -251,6 +251,30 @@
   .cmodal-btn.danger{ background:transparent; color:var(--warn); border-color:rgba(176,105,31,.5); }
   @media (max-width:600px){ .cmodal-grid,.cmodal-grid3{ grid-template-columns:1fr; } }
   @media print{ .cases-bar,.cs-actions,#caseFilterMenu,#caseModal{ display:none !important; } }
+  /* This week at a glance */
+  .glance-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+  .glance-tile{ background:var(--field); border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
+  .glance-label{ font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+  .glance-row{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; padding:1px 0; }
+  .glance-stage{ font-size:11px; color:var(--muted); }
+  .glance-row b{ font-size:14px; font-weight:600; color:var(--navy); font-variant-numeric:tabular-nums; }
+  .glance-total{ border-top:1px solid var(--line); margin-top:5px; padding-top:5px; }
+  .glance-total .glance-stage{ font-weight:700; color:var(--navy); text-transform:uppercase; letter-spacing:.03em; font-size:10px; }
+  .glance-total b{ font-size:16px; font-weight:800; }
+  @media (max-width:600px){ .glance-grid{ grid-template-columns:1fr; } }
+  /* Print just the Cases (the Print button): let the table flow and tighten so it fits one page */
+  @media print{
+    body.print-cases .card{ page-break-inside:auto !important; margin-bottom:6px; border:1px solid #ddd; }
+    body.print-cases .glance-grid{ gap:8px; }
+    body.print-cases .glance-tile{ padding:7px 10px; }
+    body.print-cases .glance-label{ margin-bottom:3px; }
+    body.print-cases .glance-row{ padding:0; }
+    body.print-cases .glance-row b{ font-size:11px; }
+    body.print-cases .glance-total b{ font-size:12px; }
+    body.print-cases .person-title{ font-size:14px; margin:0 0 5px; }
+    body.print-cases table.grid th, body.print-cases table.grid td{ padding:2px 5px; font-size:9px; }
+    body.print-cases .eyebrow{ margin-bottom:3px; }
+  }
 </style>
 </head>
 <body>
@@ -414,7 +438,7 @@ function buildControls(){
 // co-credit). The partner comp split is applied ONLY on the Chairman's Club (firmShare).
 function caseStats(cases, week){
   const mix = {}; PRODUCTS.forEach(p => mix[p]={op:0,subN:0,sub:0,clN:0,cl:0});
-  let opp=0,nbSub=0,nbClosed=0,revSub=0,revClosed=0,fycSub=0,aumSub=0,premClosed=0,potential=0,fycClosed=0,aumTotal=0;
+  let opp=0,nbSub=0,nbClosed=0,revSub=0,revClosed=0,fycSub=0,aumSub=0,premClosed=0,potential=0,fycClosed=0,aumTotal=0,annSub=0,annClosed=0,aumOpen=0,fycOpen=0,annOpen=0;
   cases.forEach(function(c){
     const amt=num(c.amount), aum=num(c.aum), prod=c.product, src=c.source;
     const rev = rowRevenue(prod, amt);  // product-aware (annuity = 4.8% of deposit)
@@ -437,11 +461,11 @@ function caseStats(cases, week){
       subHere    = c.state==="Submitted";
       closedHere = c.state==="Closed";
     }
-    if(openedHere){ opp++; if(SOURCE_PREMIUM[src]) potential += SOURCE_PREMIUM[src]; if(mix[prod]) mix[prod].op++; }
-    if(subHere){ nbSub++; revSub+=rev; fycSub+=rowFyc(prod,amt); aumSub+=aum; if(mix[prod]){mix[prod].subN++; mix[prod].sub+=rev;} }
-    if(closedHere){ nbClosed++; revClosed+=rev; fycClosed+=rowFyc(prod,amt); premClosed += rowPremium(prod,amt) + aum*PREMIUM_PER_AUM; aumTotal += aum; if(mix[prod]){mix[prod].clN++; mix[prod].cl+=rev;} }
+    if(openedHere){ opp++; aumOpen+=aum; fycOpen+=rowFyc(prod,amt); if(prod==="Annuity") annOpen+=amt; if(SOURCE_PREMIUM[src]) potential += SOURCE_PREMIUM[src]; if(mix[prod]) mix[prod].op++; }
+    if(subHere){ nbSub++; revSub+=rev; fycSub+=rowFyc(prod,amt); aumSub+=aum; if(prod==="Annuity") annSub+=amt; if(mix[prod]){mix[prod].subN++; mix[prod].sub+=rev;} }
+    if(closedHere){ nbClosed++; revClosed+=rev; fycClosed+=rowFyc(prod,amt); premClosed += rowPremium(prod,amt) + aum*PREMIUM_PER_AUM; aumTotal += aum; if(prod==="Annuity") annClosed+=amt; if(mix[prod]){mix[prod].clN++; mix[prod].cl+=rev;} }
   });
-  return {mix,opp,nbSub,nbClosed,revSub,revClosed,fycSub,aumSub,premClosed,potential,fycClosed,aumTotal};
+  return {mix,opp,nbSub,nbClosed,revSub,revClosed,fycSub,aumSub,premClosed,potential,fycClosed,aumTotal,annSub,annClosed,aumOpen,fycOpen,annOpen};
 }
 
 function casesFor(week, person){
@@ -537,10 +561,10 @@ function renderSnapshot(person, week, mode){
   const snapCard = '<section class="card"><div class="eyebrow"><span class="dot"></span><span>Live snapshot</span></div>'+card+nums+'</section>';
   if(mode==="print"){
     return '<h2 class="person-title">'+esc(person)+'</h2>' + snapCard + renderMix(st) + renderRevenue(st) +
-      '<div class="cases-page">' + renderCasesList(casesFor(week, person)) + '</div>';
+      '<div class="cases-page">' + renderGlance(week, person) + renderCasesList(casesFor(week, person)) + '</div>';
   }
   return '<div class="report-cols"><div>'+renderMix(st)+renderRevenue(st)+'</div><div>'+snapCard+'</div></div>' +
-    renderCasesList(casesForList(week, person));
+    renderGlance(week, person) + renderCasesList(casesForList(week, person));
 }
 
 function renderRevenue(st){
@@ -747,10 +771,12 @@ function renderCasesPrint(cases){
 function printCases(){
   var body=document.getElementById("report-body");
   var saved=body.innerHTML;
+  var who=document.getElementById("whoSel").value;
   // Keep the page's own masthead at the top; no extra injected logo.
-  body.innerHTML = renderCasesPrint(casesDisplayed);
+  body.innerHTML = renderGlance(CURRENT_WEEK, who) + renderCasesPrint(casesDisplayed);
+  document.body.classList.add("print-cases");
   window.print();
-  setTimeout(function(){ body.innerHTML = saved; }, 1500);
+  setTimeout(function(){ body.innerHTML = saved; document.body.classList.remove("print-cases"); }, 1500);
 }
 
 /* — Writes: create / update / delete / set-weeks (POST, no-cors) — */
@@ -992,7 +1018,25 @@ function renderTeam(week){
   }).join("");
   const leadCard = '<section class="card"><div class="eyebrow"><span class="dot"></span><span>By person this week</span></div>'+
     '<div class="tscroll"><table class="lead"><thead><tr><th>Agent</th><th>Goals</th><th>Opps</th><th>Subm.</th><th>Closed</th><th>Premium</th><th>FYC closed</th><th>AUM</th></tr></thead><tbody>'+lead+'</tbody></table></div></section>';
-  return totals + leadCard + '<div class="pbreak">'+renderMix(all)+'</div>' + renderCasesList(casesForList(week, null));
+  return totals + leadCard + '<div class="pbreak">'+renderMix(all)+'</div>' + renderGlance(week, "__team__") + renderCasesList(casesForList(week, null));
+}
+
+/* ── This week at a glance: AUM / FYC / Annuity, written + closed ── */
+function renderGlance(week, who){
+  var person = (who==="__team__") ? null : who;
+  var st = caseStats(casesFor(week, person), week);
+  function row(lbl, v, cls){ return '<div class="glance-row'+(cls?' '+cls:'')+'"><span class="glance-stage">'+lbl+'</span><b>'+money(v)+'</b></div>'; }
+  function tile(label, o, s, c){
+    return '<div class="glance-tile"><div class="glance-label">'+label+'</div>'+
+      row("Open", o)+row("Submitted", s)+row("Closed", c)+row("Total", o+s+c, "glance-total")+
+    '</div>';
+  }
+  return '<section class="card"><div class="eyebrow"><span class="dot"></span><span>This week at a glance</span></div>'+
+    '<div class="glance-grid">'+
+      tile("AUM", st.aumOpen, st.aumSub, st.aumTotal)+
+      tile("FYC", st.fycOpen, st.fycSub, st.fycClosed)+
+      tile("Annuity (deposit)", st.annOpen, st.annSub, st.annClosed)+
+    '</div></section>';
 }
 
 /* ── Render the current selection ────────────────────────── */
