@@ -417,6 +417,8 @@
     font-family:inherit;transition:background .15s,color .15s;
   }
   .clog-add:hover{background:var(--field);color:var(--navy);}
+  .clog-add.on{background:var(--navy);color:#fff;border-style:solid;border-color:var(--navy);}
+  .tc-row .tc-c-week{display:block;font-size:10.5px;color:var(--muted);font-weight:400;margin-top:1px;}
 
   @media (max-width:560px){
     .clog-field.name,.clog-field.source,.clog-field.product{flex:1 1 100%;}
@@ -628,6 +630,10 @@
   .tc-pill.Lost{background:rgba(92,107,126,.15);color:var(--muted);text-decoration:line-through;}
   .tc-row .tc-money{font-variant-numeric:tabular-nums;text-align:right;}
   .tc-row .tc-agent{font-size:11.5px;color:var(--muted);}
+  .tc-row .tc-agents{display:flex;flex-direction:column;gap:2px;min-width:0;}
+  .tc-row .tc-agent-main{font-size:11.5px;font-weight:600;color:var(--ink);line-height:1.25;}
+  .tc-row .tc-agent-sub{font-size:11px;color:var(--muted);line-height:1.25;padding-left:10px;position:relative;}
+  .tc-row .tc-agent-sub::before{content:"+";position:absolute;left:0;color:var(--gold);font-weight:700;}
   @media (max-width:640px){
     .tc-row{grid-template-columns:1fr 1fr;}
   }
@@ -655,6 +661,32 @@
   .tc-search button:hover{ filter:brightness(1.15); }
   .tc-search-results{ display:none; }
   .tc-search-results.show{ display:block; margin:0 0 14px; }
+  /* Excel-style column filter headers + dropdown */
+  .tc-colhead{ cursor:pointer; user-select:none; display:inline-flex; align-items:center; gap:3px; }
+  .tc-colhead:hover{ color:var(--navy); }
+  .tc-funnel{ font-size:9px; opacity:.5; }
+  .tc-colhead.tc-filtered{ color:var(--gold); }
+  .tc-colhead.tc-filtered .tc-funnel{ opacity:1; color:var(--gold); }
+  #tcFilterMenu{ position:fixed; z-index:1000; background:#fff; border:1px solid var(--line-strong); border-radius:10px; box-shadow:0 12px 32px rgba(14,36,64,.2); padding:8px; font-size:13px; display:flex; flex-direction:column; }
+  #tcFilterMenu[hidden]{ display:none; }
+  .tcfm-sort{ display:flex; gap:6px; margin-bottom:6px; }
+  .tcfm-sortbtn{ flex:1; padding:7px 8px; font-size:12px; border:1px solid var(--line); border-radius:7px; background:var(--field); color:var(--navy); cursor:pointer; font-family:inherit; }
+  .tcfm-sortbtn:hover{ background:#fff; border-color:var(--line-strong); }
+  .tcfm-row{ display:flex; align-items:center; gap:8px; padding:5px 6px; border-radius:6px; cursor:pointer; }
+  .tcfm-row:hover{ background:var(--field); }
+  .tcfm-row span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .tcfm-allrow{ font-weight:700; border-bottom:1px solid var(--line); border-radius:0; margin-bottom:4px; padding-bottom:8px; }
+  .tcfm-list{ overflow-y:auto; max-height:210px; }
+  .tcfm-empty{ color:var(--muted); padding:8px; font-size:12px; }
+  .tcfm-foot{ display:flex; gap:6px; margin-top:8px; border-top:1px solid var(--line); padding-top:8px; }
+  .tcfm-clear{ flex:1; padding:7px; font-size:12px; border:1px solid var(--line-strong); border-radius:7px; background:transparent; color:var(--muted); cursor:pointer; font-family:inherit; }
+  .tcfm-close{ flex:1; padding:7px; font-size:12px; border:none; border-radius:7px; background:var(--navy); color:#fff; cursor:pointer; font-family:inherit; }
+  .tcfm-num{ margin-bottom:6px; }
+  .tcfm-op{ width:100%; padding:7px 8px; font-size:12px; border:1px solid var(--line); border-radius:7px; background:var(--field); color:var(--ink); font-family:inherit; margin-bottom:8px; }
+  .tcfm-num-inputs{ display:flex; align-items:center; gap:6px; }
+  .tcfm-num-inputs input{ width:100%; min-width:0; padding:7px 8px; font-size:13px; border:1px solid var(--line); border-radius:7px; font-family:inherit; }
+  .tcfm-and{ font-size:12px; color:var(--muted); }
+  .tcfm-apply{ flex:1; padding:7px; font-size:12px; border:none; border-radius:7px; background:var(--navy); color:#fff; cursor:pointer; font-family:inherit; }
   .tcs-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:9px 11px; border:1px solid var(--line); border-radius:9px; margin-bottom:6px; background:var(--field); }
   .tcs-name{ font-weight:600; }
   .tcs-meta{ color:var(--muted); font-size:12.5px; }
@@ -702,6 +734,23 @@
   #welcome-agent{ width:100%; max-width:360px; padding:14px 16px; font-size:16px;
     border:1px solid var(--gold); border-radius:10px; background:#fff; color:var(--ink); }
   @media (max-width:600px){ #welcome-logo{ height:60px; } }
+  /* Duplicate-case guard */
+  .tc-dup-warn{ display:none; margin-top:12px; padding:12px 14px; border:1px solid rgba(176,105,31,.5); background:rgba(176,105,31,.08); border-radius:10px; }
+  .tc-dup-warn.show{ display:block; }
+  .dup-head{ font-size:13px; color:var(--warn); font-weight:600; margin-bottom:10px; line-height:1.45; }
+  .dup-actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:12px; flex-wrap:wrap; }
+  #tcDupCancel{ background:transparent; border:1px solid var(--line-strong); color:var(--ink); border-radius:7px; padding:9px 14px; font-size:12px; cursor:pointer; font-family:inherit; }
+  #tcDupForce{ background:var(--warn); color:#fff; border:none; border-radius:7px; padding:9px 14px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; }
+  /* Admin "Correct the weeks" panel */
+  .tc-week-fix{ margin-top:14px; padding:13px 15px; border:1px solid var(--line-strong); background:var(--field); border-radius:10px; }
+  .tc-wf-h{ font-family:'Fraunces',serif; font-size:15px; margin:0 0 3px; color:var(--navy); }
+  .tc-wf-sub{ font-size:12px; color:var(--muted); margin:0 0 11px; line-height:1.4; }
+  .tc-wf-grid{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  .tc-wf-grid label{ display:flex; flex-direction:column; gap:5px; font-size:12px; font-weight:600; color:var(--muted); }
+  .tc-wf-grid select{ padding:9px 10px; font-size:13px; border:1px solid var(--line-strong); border-radius:8px; background:#fff; color:var(--ink); font-family:inherit; }
+  #tcWeekFixBtn{ margin-top:12px; background:var(--navy); color:#fff; border:none; border-radius:8px; padding:10px 16px; font-weight:700; font-size:13px; cursor:pointer; font-family:inherit; }
+  #tcWeekFixBtn:hover{ filter:brightness(1.12); }
+  @media (max-width:600px){ .tc-wf-grid{ grid-template-columns:1fr; } #tcWeekFixBtn{ width:100%; min-height:44px; } }
 </style>
 </head>
 <body>
@@ -819,12 +868,12 @@
           <div>
             <label for="rev_sub">Revenue submitted</label>
             <div class="calc-badge" style="margin:0 0 6px;">&#8635; Auto-calculated from product mix</div>
-            <div class="money-wrap"><input type="number" id="rev_sub" readonly class="calc" placeholder="—"></div>
+            <div class="money-wrap"><input type="text" id="rev_sub" readonly class="calc" placeholder="—"></div>
           </div>
           <div>
             <label for="rev_closed">Revenue closed</label>
             <div class="calc-badge" style="margin:0 0 6px;">&#8635; Auto-calculated from product mix</div>
-            <div class="money-wrap"><input type="number" id="rev_closed" readonly class="calc" placeholder="—"></div>
+            <div class="money-wrap"><input type="text" id="rev_closed" readonly class="calc" placeholder="—"></div>
           </div>
         </div>
       </section>
@@ -963,6 +1012,9 @@
     <p class="hint">Every case logged by the whole team for the selected week. Check here before adding a new one so we don't double-count.</p>
     <div class="tc-bar">
       <button type="button" class="clog-add" id="tcLoadBtn">&#8635; Load / refresh</button>
+      <button type="button" class="clog-add partner-only" id="tcViewAllBtn">View all cases</button>
+      <button type="button" class="clog-add partner-only" id="tcExportBtn">&#11015; Export</button>
+      <button type="button" class="clog-add" id="tcClearFilters" style="display:none;">&#10005; Clear filters</button>
       <span id="tcStatus" class="tc-status"></span>
     </div>
     <div class="tc-search">
@@ -993,6 +1045,18 @@
       </div>
       <div id="tcAmountHint" class="tc-status"></div>
       <div id="tcAddStatus" class="tc-status"></div>
+      <div id="tcDupWarn" class="tc-dup-warn"></div>
+      <div class="tc-week-fix partner-only" id="tcWeekFix" style="display:none;">
+        <h4 class="tc-wf-h">Correct the weeks (admin)</h4>
+        <p class="tc-wf-sub">Move each step to the week it really happened. Leave a step on &ldquo;none&rdquo; if the case has not reached that stage.</p>
+        <div class="tc-wf-grid">
+          <label>Opened week<select id="wfOpened"></select></label>
+          <label>Submitted week<select id="wfSubmitted"></select></label>
+          <label>Closed week<select id="wfClosed"></select></label>
+        </div>
+        <button type="button" id="tcWeekFixBtn">Apply week corrections</button>
+        <div id="tcWeekFixStatus" class="tc-status"></div>
+      </div>
     </div>
   </section>
 </div>
@@ -1005,6 +1069,18 @@
    Leave it empty to download a CSV and copy a summary instead.
    ============================================================ */
 const SUBMIT_ENDPOINT = "https://script.google.com/macros/s/AKfycbyBkStY31dgbEIkVCMFcgfFtM_LbVAtOCrDnzw9tDYIeK7H8cL5xdsTJkBlxZGnaQTN/exec";
+
+/* Favicon: reuse the embedded brand logo so the browser tab shows the RWG mark
+   (no extra weight — points at the logo image already loaded on the page). */
+(function(){
+  var logo = document.getElementById("gate-logo") || document.querySelector(".mast-logo") || document.getElementById("welcome-logo");
+  if(!logo || !logo.src) return;
+  var link = document.querySelector("link[rel~='icon']") || document.createElement("link");
+  link.rel = "icon";
+  link.type = "image/png";
+  link.href = logo.src;
+  if(!link.parentNode) document.head.appendChild(link);
+})();
 
 /* ---- Scoring (edit freely) ---------------------------------
    ACTIVITY_POINTS: difficulty weight for each activity.
@@ -1187,9 +1263,9 @@ TYPES.forEach(t=>{
     '<div class="tname">'+t.name+'</div>'+
     '<div><span class="cap"># Opened</span><input type="number" readonly class="calc" id="'+t.id+'_count" placeholder="—"></div>'+
     '<div><span class="cap"># Submitted</span><input type="number" readonly class="calc" id="'+t.id+'_submitted_count" placeholder="—"></div>'+
-    '<div class="mcell"><span class="cap">$ Submitted</span><input type="number" readonly class="calc" id="'+t.id+'_sub" placeholder="—"></div>'+
+    '<div class="mcell"><span class="cap">$ Submitted</span><input type="text" readonly class="calc" id="'+t.id+'_sub" placeholder="—"></div>'+
     '<div><span class="cap"># Closed</span><input type="number" readonly class="calc" id="'+t.id+'_closed_count" placeholder="—"></div>'+
-    '<div class="mcell"><span class="cap">$ Closed</span><input type="number" readonly class="calc" id="'+t.id+'_closed" placeholder="—"></div>';
+    '<div class="mcell"><span class="cap">$ Closed</span><input type="text" readonly class="calc" id="'+t.id+'_closed" placeholder="—"></div>';
   typeRows.appendChild(row);
 });
 
@@ -1225,6 +1301,9 @@ TYPES.forEach(t=>{
       });
     }
   }
+
+  // Expose the week list so the admin "Correct the weeks" panel reuses the exact same Fridays.
+  window.RWG_WEEKS = weeks.map(function(w){ return { iso:w.friStr, label:w.label }; });
 
   // Append picker to body so it escapes any card stacking context
   const picker = document.createElement('div');
@@ -1268,6 +1347,7 @@ TYPES.forEach(t=>{
       selectWeek(wk);
       picker.hidden = true;
       trigger.classList.remove('open');
+      if(window.onWeekChange) window.onWeekChange();
     });
     picker.appendChild(row);
   });
@@ -1308,8 +1388,9 @@ TYPES.forEach(t=>{
 })();
 
 const $ = id => document.getElementById(id);
-const num = id => { const el = $(id); const v = el ? parseFloat(el.value) : NaN; return isNaN(v)?0:v; };
+const num = id => { const el = $(id); const v = el ? parseFloat(String(el.value).replace(/[$,\s]/g,"")) : NaN; return isNaN(v)?0:v; };
 const money = n => "$" + Math.round(n).toLocaleString("en-US");
+const fmtAmt = n => Math.round(n).toLocaleString("en-US");   // dollar value with thousands commas (no $; CSS adds it)
 const pct = (a,b) => b>0 ? Math.round(100*a/b)+"%" : "—";
 function setRatio(valId, tgtId, val, target, fmt){
   const v=document.getElementById(valId), t=document.getElementById(tgtId);
@@ -1512,13 +1593,15 @@ $("btnSubmit").addEventListener("click", function(){
    ------------------------------------------------------------ */
 function recalcFromCases(){
   const agent = document.getElementById("agent").value;
+  const week  = document.getElementById("week").value;
+  const all   = window.allCases || [];
   // Cases credited to this agent: ones they own (closer) plus ones they were co-credited on (Opened with).
-  const mine = (window.currentTeamCases || []).filter(function(c){ return c.submitting_agent === agent || caseCoCredit(c).indexOf(agent) >= 0; });
+  const mine = all.filter(function(c){ return c.submitting_agent === agent || caseCoCredit(c).indexOf(agent) >= 0; });
 
   const totals = {};
   TYPES.forEach(function(t){ totals[t.id] = {count:0, submittedCount:0, sub:0, closedCount:0, clo:0}; });
 
-  let potentialPremium=0, premiumWritten=0, premiumPipeline=0, aumTotal=0,
+  let potentialPremium=0, premiumWritten=0, pipelineFyc=0, aumTotal=0,
       bigCaseCount=0, closedFycSum=0, closedFycN=0, fycClosed=0,
       premiumEquivClosed=0, fycSubmitted=0, aumSubmitted=0, revenueClosed=0;
 
@@ -1527,24 +1610,38 @@ function recalcFromCases(){
     const srcId  = (SOURCES.find(function(s){return s.label===c.source;})||{}).id;
     const amt = Number(c.amount)||0;
     const aum = Number(c.aum)||0;
-    const st  = c.state;
-    if(st==="Lost") return; // dead deal — excluded from all live numbers ($0)
+    const rf  = prodId ? rowFyc(prodId, amt) : 0;
+    const rp  = prodId ? rowPremium(prodId, amt) : 0;
+    const rrev= prodId ? rowRevenue(prodId, amt) : amt;  // annuity = 4.8% of deposit
 
-    if(st==="Opened" && srcId && SOURCE_PREMIUM[srcId]) potentialPremium += SOURCE_PREMIUM[srcId];
-    aumTotal += aum;
-    const rf = prodId ? rowFyc(prodId, amt) : 0;
-    const rp = prodId ? rowPremium(prodId, amt) : 0;
-    const rrev = prodId ? rowRevenue(prodId, amt) : amt;  // annuity = 4.8% of deposit
-    if(rf >= CONFIG.BIG_CASE_FYC) bigCaseCount++;
-    if(st==="Submitted"){ premiumWritten += rp; premiumPipeline += rf; fycSubmitted += rf; aumSubmitted += aum; }
-    if(st==="Opened")   { premiumPipeline += rf; }
-    if(st==="Closed")   { fycClosed += rf; closedFycSum += rf; closedFycN++;
-                          revenueClosed += rrev; premiumEquivClosed += rp + aum*PREMIUM_PER_AUM; }
+    // Live pipeline (case still Opened/Submitted right now) powers the big-case lens. This is a
+    // cross-week "what's still in play" figure, not a single-week number.
+    if(c.state==="Opened" || c.state==="Submitted"){ pipelineFyc += rf; if(rf >= CONFIG.BIG_CASE_FYC) bigCaseCount++; }
 
-    if(prodId){
-      if(st==="Opened")    totals[prodId].count++;
-      if(st==="Submitted"){ totals[prodId].submittedCount++; totals[prodId].sub += rrev; }
-      if(st==="Closed")   { totals[prodId].closedCount++;   totals[prodId].clo += rrev; }
+    // Attribute each case to ONE bucket for the selected week: the furthest milestone that
+    // landed in THIS week. A case opened weeks ago but submitted this week counts as a submit
+    // this week (and still counts as an open back in the week it was opened). Mirrors the dashboard.
+    const ow = c.opened_week || c.week_ending;
+    const sw = c.submitted_week || "";
+    const cw = c.closed_week || "";
+    let openedHere=false, subHere=false, closedHere=false;
+    if(week){
+      if(cw===week) closedHere=true;
+      else if(sw===week) subHere=true;
+      else if(ow===week) openedHere=true;
+    }
+    if(openedHere){
+      if(srcId && SOURCE_PREMIUM[srcId]) potentialPremium += SOURCE_PREMIUM[srcId];
+      if(prodId) totals[prodId].count++;
+    }
+    if(subHere){
+      premiumWritten += rp; fycSubmitted += rf; aumSubmitted += aum;
+      if(prodId){ totals[prodId].submittedCount++; totals[prodId].sub += rrev; }
+    }
+    if(closedHere){
+      fycClosed += rf; closedFycSum += rf; closedFycN++;
+      revenueClosed += rrev; premiumEquivClosed += rp + aum*PREMIUM_PER_AUM; aumTotal += aum;
+      if(prodId){ totals[prodId].closedCount++; totals[prodId].clo += rrev; }
     }
   });
 
@@ -1554,9 +1651,9 @@ function recalcFromCases(){
           cl=document.getElementById(t.id+"_closed");
     if(c)  c.value  = totals[t.id].count          || "";
     if(sc) sc.value = totals[t.id].submittedCount || "";
-    if(s)  s.value  = totals[t.id].sub            || "";
+    if(s)  s.value  = totals[t.id].sub ? fmtAmt(totals[t.id].sub) : "";
     if(cc) cc.value = totals[t.id].closedCount    || "";
-    if(cl) cl.value = totals[t.id].clo            || "";
+    if(cl) cl.value = totals[t.id].clo ? fmtAmt(totals[t.id].clo) : "";
   });
 
   let totalOpp=0, totalNbSub=0, totalNbClo=0;
@@ -1569,28 +1666,33 @@ function recalcFromCases(){
   let totalSub=0, totalClo=0;
   TYPES.forEach(function(t){ totalSub += totals[t.id].sub; totalClo += totals[t.id].clo; });
   const rsi=document.getElementById("rev_sub"), rci=document.getElementById("rev_closed");
-  if(rsi) rsi.value = totalSub || "";
-  if(rci) rci.value = totalClo || "";
+  if(rsi) rsi.value = totalSub ? fmtAmt(totalSub) : "";
+  if(rci) rci.value = totalClo ? fmtAmt(totalClo) : "";
 
-  // Team-wide totals (partner cards show the whole team's numbers)
+  // Team-wide totals (partner cards show the whole team's numbers): one bucket per case by the
+  // furthest milestone that landed in the selected week.
   let teamOpen=0, teamFycSub=0, teamAumSub=0, teamRevClosed=0;
-  (window.currentTeamCases||[]).forEach(function(c){
+  all.forEach(function(c){
     const pid = (TYPES.find(function(t){return t.name===c.product;})||{}).id;
-    const a = Number(c.amount)||0, au = Number(c.aum)||0, s = c.state;
+    const a = Number(c.amount)||0, au = Number(c.aum)||0;
     const f = pid ? rowFyc(pid, a) : 0;
-    if(s==="Opened") teamOpen++;
-    if(s==="Submitted"){ teamFycSub += f; teamAumSub += au; }
-    if(s==="Closed") teamRevClosed += (pid ? rowRevenue(pid, a) : a);
+    const rv = pid ? rowRevenue(pid, a) : a;
+    const ow = c.opened_week || c.week_ending, sw = c.submitted_week||"", cw = c.closed_week||"";
+    if(week){
+      if(cw===week) teamRevClosed += rv;
+      else if(sw===week){ teamFycSub += f; teamAumSub += au; }
+      else if(ow===week) teamOpen++;
+    }
   });
   GOALS.teamOpen = teamOpen; GOALS.teamFycSub = teamFycSub;
   GOALS.teamAumSub = teamAumSub; GOALS.teamRevClosed = teamRevClosed;
 
   GOALS.potentialPremium = potentialPremium;
   GOALS.premiumWritten   = premiumWritten;
-  GOALS.premiumPipeline  = premiumPipeline;
+  GOALS.premiumPipeline  = pipelineFyc;
   GOALS.aum              = aumTotal;
   GOALS.fycWeek          = fycClosed;
-  GOALS.pipelineFyc      = premiumPipeline;
+  GOALS.pipelineFyc      = pipelineFyc;
   GOALS.bigCaseCount     = bigCaseCount;
   GOALS.avgFycClosed     = closedFycN > 0 ? closedFycSum/closedFycN : 0;
   GOALS.premiumEquivClosed = premiumEquivClosed;
@@ -1794,6 +1896,8 @@ function postCase(payload, done){
   let editingCase = null;
   let searchResults = [];
   let currentCases = [];
+  let displayedCases = [];   // the exact rows currently shown (after filters + sort) — used by Export
+  let forceAdd = false;   // set true to skip the duplicate guard for one save
   function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g, function(m){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m]; }); }
   function money(n){ return "$"+Math.round(n||0).toLocaleString("en-US"); }
 
@@ -1813,16 +1917,24 @@ function postCase(payload, done){
     currentCases = cases || [];
     window.currentTeamCases = currentCases;
     recalcFromCases();
-    if(!currentCases.length){ listEl.innerHTML=""; statusEl.textContent="No cases logged yet for this week."; return; }
-    statusEl.textContent = currentCases.length + " case" + (currentCases.length>1?"s":"") + " this week";
+    // Excel-style per-column filters (set via the header dropdowns) on top of the current view.
+    var anyFilter = anyColFilter();
+    var clrBtn = document.getElementById("tcClearFilters"); if(clrBtn) clrBtn.style.display = anyFilter ? "" : "none";
+    var display = currentCases.filter(caseMatchesFilters);
+    if(!display.length){ displayedCases=[]; listEl.innerHTML=""; statusEl.textContent = anyFilter ? "No cases match your filters." : (viewAll ? "No cases in the system yet." : "No cases logged yet for this week."); return; }
+    statusEl.textContent = display.length + " case" + (display.length>1?"s":"") + (anyFilter?" (filtered)":"") + (viewAll?" · all weeks":" · this week");
     const isPartner = document.body.classList.contains("role-partner");
     const head = '<div class="tc-head">' + TC_COLS.map(function(col){
       if(!col.key) return '<span></span>';
-      const arrow = (sortKey===col.key) ? (sortDir>0?' ▲':' ▼') : '';
+      var arrow = (sortKey===col.key) ? (sortDir>0?' ▲':' ▼') : '';
+      if(FILTER_COLS[col.key] || NUM_COLS[col.key]){
+        var on = colFilters[col.key] ? ' tc-filtered' : '';
+        return '<span class="tc-colhead'+(col.cls?(' '+col.cls):'')+on+'" data-filter="'+col.key+'">'+col.label+arrow+'<span class="tc-funnel">▾</span></span>';
+      }
       return '<span class="tc-sort'+(col.cls?(' '+col.cls):'')+'" data-sort="'+col.key+'">'+col.label+arrow+'</span>';
     }).join('') + '</div>';
 
-    let view = currentCases.slice();
+    let view = display.slice();
     if(sortKey){
       const isNum = TC_NUMERIC[sortKey];
       view.sort(function(a,b){
@@ -1832,16 +1944,21 @@ function postCase(payload, done){
       });
     }
 
+    displayedCases = view;
     listEl.innerHTML = head + view.map(function(c){
       const st = c.state || "";
+      const weekSub = viewAll && (c.opened_week||c.week_ending) ? '<span class="tc-c-week">opened '+esc(c.opened_week||c.week_ending)+'</span>' : '';
       return '<div class="tc-row">'+
-        '<span class="tc-c-name">'+esc(c.client_name||"(no name)")+'</span>'+
+        '<span class="tc-c-name">'+esc(c.client_name||"(no name)")+weekSub+'</span>'+
         '<span>'+esc(c.product||"")+'</span>'+
         '<span class="tc-pill '+st+'">'+esc(st)+'</span>'+
         '<span class="tc-agent">'+esc(c.source||"")+'</span>'+
         '<span class="tc-money">'+money(c.amount)+'</span>'+
         '<span class="tc-money">'+(c.aum? money(c.aum):"-")+'</span>'+
-        '<span class="tc-agent">'+esc(c.submitting_agent||"")+'</span>'+
+        '<span class="tc-agents">'+
+          '<span class="tc-agent-main">'+esc(c.submitting_agent||"")+'</span>'+
+          caseCoCredit(c).map(function(n){ return '<span class="tc-agent-sub">'+esc(n)+'</span>'; }).join("")+
+        '</span>'+
         '<span class="tc-actions">'+
           '<button type="button" class="tc-edit" data-id="'+esc(c.record_id)+'">Edit</button>'+
           (isPartner ? '<button type="button" class="tc-del" data-id="'+esc(c.record_id)+'">Del</button>' : "")+
@@ -1850,25 +1967,240 @@ function postCase(payload, done){
     }).join("");
   }
 
+  // A case is "in" a week if it was opened, submitted, or closed that week.
+  function caseActiveInWeek(c, wk){
+    if(!wk) return true;
+    const ow = c.opened_week || c.week_ending;
+    return ow===wk || (c.submitted_week||"")===wk || (c.closed_week||"")===wk;
+  }
+  // Partner-only "View all cases" toggle: when on, the list shows every case (all weeks, incl. Lost).
+  var viewAll = false;
+  function casesToShow(){
+    var ac = window.allCases || [];
+    if(viewAll && document.body.classList.contains("role-partner")) return ac;
+    var wk = document.getElementById("week").value;
+    return ac.filter(function(c){ return caseActiveInWeek(c, wk); });
+  }
   function load(){
     const week = document.getElementById("week").value;
     if(!week){ statusEl.textContent="Pick a week first."; return; }
     statusEl.textContent="Loading...";
-    jsonpGetCases(week, function(resp){
+    // Load every case (any week), so a case opened earlier but advanced THIS week still shows
+    // and counts here. The list shows the selected week (or everything, if "View all" is on).
+    jsonpGetCases("", function(resp){
       if(!resp || !resp.ok){ statusEl.textContent="Could not load (check the connection)."; return; }
-      render(resp.cases || []);
+      window.allCases = resp.cases || [];
+      render(casesToShow());
     });
   }
   document.getElementById("tcLoadBtn").addEventListener("click", load);
+  var viewAllBtn = document.getElementById("tcViewAllBtn");
+  if(viewAllBtn) viewAllBtn.addEventListener("click", function(){
+    viewAll = !viewAll;
+    viewAllBtn.textContent = viewAll ? "Show this week only" : "View all cases";
+    viewAllBtn.classList.toggle("on", viewAll);
+    render(casesToShow());
+  });
 
-  // Edit / delete via event delegation on the list
+  // ── Excel-style per-column filters: click a header to choose which values to show ──
+  var FILTER_COLS = {
+    product:          function(c){ return [c.product||""]; },
+    state:            function(c){ return [c.state||""]; },
+    source:           function(c){ return [c.source||""]; },
+    submitting_agent: function(c){ return [c.submitting_agent||""].concat(caseCoCredit(c)); }
+  };
+  // Numeric columns use an operator filter (≥ / ≤ / between / =) instead of checkboxes.
+  var NUM_COLS = {
+    amount: function(c){ return Number(c.amount)||0; },
+    aum:    function(c){ return Number(c.aum)||0; }
+  };
+  var colFilters = {};   // column key -> Set (categorical) or {op,a,b} (numeric); absent = show all
+  function anyColFilter(){ for(var k in colFilters){ if(colFilters[k]) return true; } return false; }
+  function numMatch(n, f){
+    if(f.op==="gte")     return n >= f.a;
+    if(f.op==="lte")     return n <= f.a;
+    if(f.op==="eq")      return n === f.a;
+    if(f.op==="between") return n >= f.a && n <= f.b;
+    return true;
+  }
+  function caseMatchesFilters(c){
+    for(var key in colFilters){
+      var f = colFilters[key];
+      if(!f) continue;
+      if(NUM_COLS[key]){ if(!numMatch(NUM_COLS[key](c), f)) return false; }
+      else if(FILTER_COLS[key]){
+        var vals = FILTER_COLS[key](c).filter(Boolean);
+        if(!vals.some(function(v){ return f.has(v); })) return false;
+      }
+    }
+    return true;
+  }
+  function distinctValues(key){
+    var seen = {}, out = [];
+    (currentCases||[]).forEach(function(c){
+      FILTER_COLS[key](c).filter(Boolean).forEach(function(v){ if(!seen[v]){ seen[v]=1; out.push(v); } });
+    });
+    out.sort(function(a,b){ var x=String(a).toLowerCase(), y=String(b).toLowerCase(); return x<y?-1:(x>y?1:0); });
+    return out;
+  }
+  var filterMenu = document.createElement("div");
+  filterMenu.id = "tcFilterMenu";
+  filterMenu.hidden = true;
+  document.body.appendChild(filterMenu);
+  var filterMenuKey = null;
+  function catMenuHtml(key){
+    var allowed = colFilters[key];
+    var rows = distinctValues(key).map(function(v){
+      var checked = !allowed || allowed.has(v);
+      return '<label class="tcfm-row"><input type="checkbox" class="tcfm-val" value="'+esc(v)+'"'+(checked?' checked':'')+'><span>'+esc(v)+'</span></label>';
+    }).join("");
+    return '<div class="tcfm-sort">'+
+        '<button type="button" class="tcfm-sortbtn" data-dir="1">Sort A→Z</button>'+
+        '<button type="button" class="tcfm-sortbtn" data-dir="-1">Sort Z→A</button>'+
+      '</div>'+
+      '<label class="tcfm-row tcfm-allrow"><input type="checkbox" class="tcfm-all"'+(!allowed?' checked':'')+'><span>(Select all)</span></label>'+
+      '<div class="tcfm-list">'+(rows||'<div class="tcfm-empty">No values</div>')+'</div>'+
+      '<div class="tcfm-foot"><button type="button" class="tcfm-clear">Clear</button><button type="button" class="tcfm-close">Done</button></div>';
+  }
+  function numMenuHtml(key){
+    var f = colFilters[key] || {};
+    var op = f.op || "gte";
+    var a = (f.a!=null ? f.a : ""), b = (f.b!=null ? f.b : "");
+    var between = op==="between";
+    function o(val,label){ return '<option value="'+val+'"'+(op===val?" selected":"")+'>'+label+'</option>'; }
+    return '<div class="tcfm-sort">'+
+        '<button type="button" class="tcfm-sortbtn" data-dir="1">Sort Low→High</button>'+
+        '<button type="button" class="tcfm-sortbtn" data-dir="-1">Sort High→Low</button>'+
+      '</div>'+
+      '<div class="tcfm-num">'+
+        '<select class="tcfm-op">'+
+          o("gte","Greater than or equal to")+o("lte","Less than or equal to")+
+          o("between","Between")+o("eq","Equal to")+
+        '</select>'+
+        '<div class="tcfm-num-inputs">'+
+          '<input type="number" class="tcfm-a" inputmode="decimal" placeholder="$ amount" value="'+esc(String(a))+'">'+
+          '<span class="tcfm-and"'+(between?"":' style="display:none"')+'>and</span>'+
+          '<input type="number" class="tcfm-b" inputmode="decimal" placeholder="$ amount" value="'+esc(String(b))+'"'+(between?"":' style="display:none"')+'>'+
+        '</div>'+
+      '</div>'+
+      '<div class="tcfm-foot"><button type="button" class="tcfm-clear">Clear</button><button type="button" class="tcfm-apply">Apply</button></div>';
+  }
+  function openFilterMenu(key, headerEl){
+    filterMenuKey = key;
+    filterMenu.innerHTML = NUM_COLS[key] ? numMenuHtml(key) : catMenuHtml(key);
+    var r = headerEl.getBoundingClientRect(), mw = 230;
+    filterMenu.hidden = false;
+    filterMenu.style.top  = (r.bottom + 4) + "px";
+    filterMenu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - mw - 10)) + "px";
+    filterMenu.style.width = mw + "px";
+  }
+  function closeFilterMenu(){ filterMenu.hidden = true; filterMenuKey = null; }
+  function applyMenuToFilters(){
+    if(!filterMenuKey) return;
+    var boxes = Array.prototype.slice.call(filterMenu.querySelectorAll(".tcfm-val"));
+    var checked = boxes.filter(function(b){ return b.checked; }).map(function(b){ return b.value; });
+    if(checked.length === boxes.length) delete colFilters[filterMenuKey];   // all checked = no filter
+    else colFilters[filterMenuKey] = new Set(checked);
+    render(currentCases);
+  }
+  function applyNumFilter(){
+    if(!filterMenuKey) return;
+    var opEl = filterMenu.querySelector(".tcfm-op");
+    if(!opEl) return;
+    var op = opEl.value;
+    var aEl = filterMenu.querySelector(".tcfm-a"), bEl = filterMenu.querySelector(".tcfm-b");
+    var a = parseFloat(aEl && aEl.value), b = parseFloat(bEl && bEl.value);
+    if(isNaN(a)) delete colFilters[filterMenuKey];                                  // no value = no filter
+    else if(op==="between"){ if(isNaN(b)) b=a; colFilters[filterMenuKey] = {op:"between", a:Math.min(a,b), b:Math.max(a,b)}; }
+    else colFilters[filterMenuKey] = {op:op, a:a};
+    closeFilterMenu();
+    render(currentCases);
+  }
+  filterMenu.addEventListener("click", function(e){
+    var sb = e.target.closest(".tcfm-sortbtn");
+    if(sb){ sortKey = filterMenuKey; sortDir = parseInt(sb.getAttribute("data-dir"),10)||1; render(currentCases); return; }
+    if(e.target.closest(".tcfm-apply")){ applyNumFilter(); return; }
+    if(e.target.closest(".tcfm-clear")){ if(filterMenuKey) delete colFilters[filterMenuKey]; closeFilterMenu(); render(currentCases); return; }
+    if(e.target.closest(".tcfm-close")){ closeFilterMenu(); return; }
+  });
+  filterMenu.addEventListener("change", function(e){
+    if(e.target.classList.contains("tcfm-op")){
+      var between = e.target.value==="between";
+      var andEl = filterMenu.querySelector(".tcfm-and"), bEl = filterMenu.querySelector(".tcfm-b");
+      if(andEl) andEl.style.display = between ? "" : "none";
+      if(bEl) bEl.style.display = between ? "" : "none";
+      return;
+    }
+    if(e.target.classList.contains("tcfm-all")){
+      var on = e.target.checked;
+      Array.prototype.slice.call(filterMenu.querySelectorAll(".tcfm-val")).forEach(function(b){ b.checked = on; });
+      applyMenuToFilters();
+    } else if(e.target.classList.contains("tcfm-val")){
+      var boxes = Array.prototype.slice.call(filterMenu.querySelectorAll(".tcfm-val"));
+      var allEl = filterMenu.querySelector(".tcfm-all");
+      if(allEl) allEl.checked = boxes.every(function(b){ return b.checked; });
+      applyMenuToFilters();
+    }
+  });
+  document.addEventListener("click", function(e){
+    if(filterMenu.hidden) return;
+    if(e.target.closest("#tcFilterMenu") || e.target.closest(".tc-colhead")) return;
+    closeFilterMenu();
+  });
+  var clearFiltersBtn = document.getElementById("tcClearFilters");
+  if(clearFiltersBtn) clearFiltersBtn.addEventListener("click", function(){ colFilters = {}; closeFilterMenu(); render(currentCases); });
+
+  // ── Export the view you're seeing (partner only): filtered + sorted rows as CSV for Excel ──
+  function exportCsv(){
+    if(!document.body.classList.contains("role-partner")) return;
+    var rows = displayedCases || [];
+    if(!rows.length){ statusEl.textContent = "Nothing to export."; return; }
+    var cols = [
+      ["Client",         function(c){ return c.client_name||""; }],
+      ["Product",        function(c){ return c.product||""; }],
+      ["Stage",          function(c){ return c.state||""; }],
+      ["Source",         function(c){ return c.source||""; }],
+      ["Amount",         function(c){ return Number(c.amount)||0; }],
+      ["AUM",            function(c){ return Number(c.aum)||0; }],
+      ["Main Agent",     function(c){ return c.submitting_agent||""; }],
+      ["Co-Credit",      function(c){ return caseCoCredit(c).join("; "); }],
+      ["Opened Week",    function(c){ return c.opened_week||c.week_ending||""; }],
+      ["Submitted Week", function(c){ return c.submitted_week||""; }],
+      ["Closed Week",    function(c){ return c.closed_week||""; }]
+    ];
+    function csvEsc(v){ var s=String(v==null?"":v); return /[",\n\r]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; }
+    var lines = [ cols.map(function(col){ return csvEsc(col[0]); }).join(",") ];
+    rows.forEach(function(c){ lines.push(cols.map(function(col){ return csvEsc(col[1](c)); }).join(",")); });
+    var blob = new Blob(["﻿"+lines.join("\r\n")], {type:"text/csv;charset=utf-8;"});  // BOM so Excel reads UTF-8
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    var tag = viewAll ? "all-weeks" : (document.getElementById("week").value || "week");
+    a.href = url; a.download = "rwg-cases-"+tag+"-"+new Date().toISOString().slice(0,10)+".csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    statusEl.textContent = "Exported "+rows.length+" case"+(rows.length>1?"s":"")+".";
+  }
+  var exportBtn = document.getElementById("tcExportBtn");
+  if(exportBtn) exportBtn.addEventListener("click", exportCsv);
+  // Re-render + recompute when the week changes (data is already loaded; no refetch needed).
+  window.onWeekChange = function(){
+    if(window.allCases && window.allCases.length){
+      render(casesToShow());
+    } else if(document.getElementById("agent").value){
+      load();
+    }
+  };
+
+  // Edit / delete / sort / filter via event delegation on the list (header is inside it)
   listEl.addEventListener("click", function(e){
     const ed = e.target.closest(".tc-edit");
     const dl = e.target.closest(".tc-del");
     const so = e.target.closest(".tc-sort");
+    const fh = e.target.closest(".tc-colhead");
     if(ed) startEdit(ed.getAttribute("data-id"));
     else if(dl) doDelete(dl.getAttribute("data-id"));
     else if(so){ const k=so.getAttribute("data-sort"); if(sortKey===k) sortDir=-sortDir; else { sortKey=k; sortDir=1; } render(currentCases); }
+    else if(fh){ e.stopPropagation(); openFilterMenu(fh.getAttribute("data-filter"), fh); }
   });
 
   function openForEdit(c){
@@ -1890,6 +2222,7 @@ function postCase(payload, done){
     document.getElementById("tcAddBtn").textContent = "Save changes";
     document.getElementById("tcCancelBtn").style.display = "";
     document.getElementById("tcAddStatus").textContent = "Editing " + (c.client_name||"case") + " ...";
+    showWeekFix(c);
     document.getElementById("tcClient").focus();
     document.getElementById("tcClient").scrollIntoView({block:"center"});
   }
@@ -1960,8 +2293,108 @@ function postCase(payload, done){
     if(amtHint) amtHint.textContent="";
     document.getElementById("tcAddBtn").textContent="Add case";
     document.getElementById("tcCancelBtn").style.display="none";
+    clearDupWarn();
+    hideWeekFix();
   }
   document.getElementById("tcCancelBtn").addEventListener("click", function(){ resetAddForm(); document.getElementById("tcAddStatus").textContent=""; });
+
+  // ── Duplicate guard: surface existing cases for the same client before adding a new one ──
+  function normName(s){ return String(s==null?"":s).trim().toLowerCase().replace(/\s+/g," "); }
+  function nameTokens(s){ return normName(s).split(" ").filter(Boolean); }
+  // Same first AND last name = very likely the same person (catches a missing middle name).
+  function sameFirstLast(a, b){
+    var ta=nameTokens(a), tb=nameTokens(b);
+    return ta.length>=2 && tb.length>=2 && ta[0]===tb[0] && ta[ta.length-1]===tb[tb.length-1];
+  }
+  // Loose match for the live hint: type the first name (or any part) and see everything related.
+  function liveMatches(typed){
+    var n = normName(typed);
+    if(n.length < 2) return [];
+    return (window.allCases||[]).filter(function(c){
+      var cn = normName(c.client_name);
+      return cn && (cn.indexOf(n)>=0 || n.indexOf(cn)>=0 || sameFirstLast(typed, c.client_name));
+    });
+  }
+  // Strong match for the hard gate on Add: exact name, or same first+last (missing middle name).
+  function strongDupes(typed){
+    var n = normName(typed);
+    if(!n) return [];
+    return (window.allCases||[]).filter(function(c){
+      return normName(c.client_name)===n || sameFirstLast(typed, c.client_name);
+    });
+  }
+  function clearDupWarn(){ var w=document.getElementById("tcDupWarn"); if(w){ w.innerHTML=""; w.classList.remove("show"); } }
+  function renderDupWarn(dupes, mode){
+    var w=document.getElementById("tcDupWarn"); if(!w) return;
+    var capped = dupes.slice(0, 10);
+    var rows = capped.map(function(c){
+      var wk = c.week_ending ? ("opened "+c.week_ending) : "";
+      return '<div class="tcs-row">'+
+        '<span class="tcs-name">'+esc(c.client_name||"(no name)")+'</span>'+
+        '<span class="tc-pill '+esc(c.state||"")+'">'+esc(c.state||"")+'</span>'+
+        '<span class="tcs-meta">'+esc(c.product||"")+' &middot; '+esc(c.submitting_agent||"")+' &middot; '+esc(wk)+'</span>'+
+        '<button type="button" class="tcs-open" data-id="'+esc(c.record_id)+'">Open / advance</button>'+
+      '</div>';
+    }).join("");
+    if(dupes.length>capped.length) rows += '<div class="tcs-meta" style="padding:4px 2px;">&hellip;and '+(dupes.length-capped.length)+' more. Use the Search box above to find it.</div>';
+    var head = (mode==="block")
+      ? '&#9888; This client looks like it is already in the system. To credit the right week, open the existing case and advance its stage instead of adding a new one.'
+      : '&#9888; '+dupes.length+' existing case'+(dupes.length>1?'s':'')+' match what you are typing. If your client is below, open it and advance it instead of adding a new one.';
+    var actions = (mode==="block")
+      ? '<div class="dup-actions"><button type="button" id="tcDupCancel">Cancel</button><button type="button" id="tcDupForce">Add as a new case anyway</button></div>'
+      : '';
+    w.innerHTML = '<div class="dup-head">'+head+'</div>'+rows+actions;
+    w.classList.add("show");
+    if(mode==="block") w.scrollIntoView({block:"center"});
+  }
+  document.getElementById("tcDupWarn").addEventListener("click", function(e){
+    var op=e.target.closest(".tcs-open"), force=e.target.closest("#tcDupForce"), cancel=e.target.closest("#tcDupCancel");
+    if(op){ var c=(window.allCases||[]).find(function(x){ return String(x.record_id)===String(op.getAttribute("data-id")); }); if(c){ clearDupWarn(); openForEdit(c); } }
+    else if(force){ forceAdd=true; clearDupWarn(); document.getElementById("tcAddBtn").click(); }
+    else if(cancel){ clearDupWarn(); }
+  });
+  // Live hint: as the agent types the client name, show any related cases (any week, any stage).
+  var tcClientEl = document.getElementById("tcClient");
+  if(tcClientEl) tcClientEl.addEventListener("input", function(){
+    if(editingId) return;            // editing an existing case — no dup check
+    var m = liveMatches(tcClientEl.value);
+    if(m.length) renderDupWarn(m, "live"); else clearDupWarn();
+  });
+
+  // ── Admin: "Correct the weeks" — move each milestone to the week it really happened ──
+  function buildWeekOptions(sel, selectedIso, includeNone){
+    if(!sel) return;
+    var list = window.RWG_WEEKS || [];
+    var has = false;
+    var opts = list.map(function(w){ if(w.iso===selectedIso) has=true; return '<option value="'+w.iso+'"'+(w.iso===selectedIso?' selected':'')+'>'+w.label+'</option>'; });
+    if(selectedIso && !has) opts.unshift('<option value="'+selectedIso+'" selected>'+selectedIso+'</option>');
+    if(includeNone) opts.unshift('<option value=""'+(!selectedIso?' selected':'')+'>none</option>');
+    sel.innerHTML = opts.join("");
+  }
+  function showWeekFix(c){
+    var wf=document.getElementById("tcWeekFix"); if(!wf) return;
+    buildWeekOptions(document.getElementById("wfOpened"),    c.opened_week || c.week_ending || "", false);
+    buildWeekOptions(document.getElementById("wfSubmitted"), c.submitted_week || "", true);
+    buildWeekOptions(document.getElementById("wfClosed"),    c.closed_week || "", true);
+    var s=document.getElementById("tcWeekFixStatus"); if(s) s.textContent="";
+    wf.style.display = "";   // CSS still hides it for non-partners (.partner-only)
+  }
+  function hideWeekFix(){ var wf=document.getElementById("tcWeekFix"); if(wf) wf.style.display="none"; }
+  var weekFixBtn = document.getElementById("tcWeekFixBtn");
+  if(weekFixBtn) weekFixBtn.addEventListener("click", function(){
+    if(!editingId) return;
+    var s=document.getElementById("tcWeekFixStatus");
+    var opened    = (document.getElementById("wfOpened")||{}).value || "";
+    var submitted = (document.getElementById("wfSubmitted")||{}).value || "";
+    var closed    = (document.getElementById("wfClosed")||{}).value || "";
+    if(!opened){ if(s) s.textContent="Pick an opened week."; return; }
+    if(s) s.textContent="Applying...";
+    postCase({ action:"setCaseWeeks", record_id:editingId, passphrase:PARTNER_PASSPHRASE,
+               opened_week:opened, submitted_week:submitted, closed_week:closed }, function(ok){
+      if(ok){ if(s) s.textContent="Weeks corrected."; resetAddForm(); document.getElementById("tcAddStatus").textContent=""; setTimeout(load, 900); }
+      else { if(s) s.textContent="Could not apply (check the connection)."; }
+    });
+  });
 
   function doDelete(id){
     const c = currentCases.find(function(x){ return String(x.record_id)===String(id); });
@@ -1982,6 +2415,12 @@ function postCase(payload, done){
     if(!agent && !isEdit){ addStatus.textContent="Select your name first."; return; }
     const client = document.getElementById("tcClient").value.trim();
     if(!client){ addStatus.textContent="Enter a client name."; return; }
+    // Duplicate guard — only when creating a NEW case (not when editing/advancing one).
+    if(!isEdit && !forceAdd){
+      const dupes = strongDupes(client);
+      if(dupes.length){ addStatus.textContent="Heads up: this client looks already logged."; renderDupWarn(dupes, "block"); return; }
+    }
+    forceAdd = false;   // consume the one-time override
     const orig = isEdit ? (editingCase || currentCases.find(function(x){ return String(x.record_id)===String(editingId); })) : null;
     const id = isEdit ? editingId : ((window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ("id-"+Date.now()+"-"+Math.random().toString(36).slice(2)));
     let submitter;
