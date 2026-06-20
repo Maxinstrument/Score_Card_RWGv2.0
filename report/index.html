@@ -185,6 +185,73 @@
     table.grid th, table.grid td, table.lead th, table.lead td{ white-space:nowrap; }
   }
   @media print{ .tscroll{ overflow:visible !important; } }
+  /* ── Cases toolkit: filters, stacked agents, toolbar, editor modal ── */
+  .cases-bar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:0 0 10px; }
+  .cases-btn{ padding:7px 12px; font-size:12px; background:transparent; border:1px dashed var(--line-strong); border-radius:8px; color:var(--muted); cursor:pointer; font-family:inherit; }
+  .cases-btn:hover{ background:var(--field); color:var(--navy); }
+  .cases-btn.on{ background:var(--navy); color:#fff; border-style:solid; border-color:var(--navy); }
+  .cases-count{ font-size:12px; color:var(--muted); margin-left:auto; }
+  .cases-total{ font-size:12px; font-weight:700; color:var(--navy); white-space:nowrap; background:rgba(194,161,77,.14); border:1px solid rgba(194,161,77,.4); border-radius:8px; padding:4px 10px; }
+  .cs-filter{ cursor:pointer; user-select:none; white-space:nowrap; }
+  .cs-filter:hover{ color:var(--navy); }
+  .cs-funnel{ font-size:9px; opacity:.5; }
+  .cs-filter.cs-filtered{ color:var(--gold); }
+  .cs-filter.cs-filtered .cs-funnel{ opacity:1; color:var(--gold); }
+  .cs-agent-main{ font-weight:600; }
+  .cs-agent-sub{ font-size:11px; color:var(--muted); padding-left:9px; position:relative; }
+  .cs-agent-sub::before{ content:"+"; position:absolute; left:0; color:var(--gold); font-weight:700; }
+  .cs-actions{ white-space:nowrap; }
+  .cs-actions button{ font-size:11px; font-weight:700; border:1px solid var(--line-strong); background:#fff; color:var(--navy); border-radius:6px; padding:4px 8px; cursor:pointer; font-family:inherit; }
+  .cs-actions .cs-del{ color:var(--warn); border-color:rgba(176,105,31,.4); }
+  #caseFilterMenu{ position:fixed; z-index:1200; background:#fff; border:1px solid var(--line-strong); border-radius:10px; box-shadow:0 12px 32px rgba(14,36,64,.2); padding:8px; font-size:13px; display:flex; flex-direction:column; }
+  #caseFilterMenu[hidden]{ display:none; }
+  .cfm-sort{ display:flex; gap:6px; margin-bottom:6px; }
+  .cfm-sortbtn{ flex:1; padding:7px 8px; font-size:12px; border:1px solid var(--line); border-radius:7px; background:var(--field); color:var(--navy); cursor:pointer; font-family:inherit; }
+  .cfm-sortbtn:hover{ background:#fff; border-color:var(--line-strong); }
+  .cfm-row{ display:flex; align-items:center; gap:8px; padding:5px 6px; border-radius:6px; cursor:pointer; }
+  .cfm-row:hover{ background:var(--field); }
+  .cfm-row span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .cfm-allrow{ font-weight:700; border-bottom:1px solid var(--line); border-radius:0; margin-bottom:4px; padding-bottom:8px; }
+  .cfm-list{ overflow-y:auto; max-height:210px; }
+  .cfm-empty{ color:var(--muted); padding:8px; font-size:12px; }
+  .cfm-foot{ display:flex; gap:6px; margin-top:8px; border-top:1px solid var(--line); padding-top:8px; }
+  .cfm-clear{ flex:1; padding:7px; font-size:12px; border:1px solid var(--line-strong); border-radius:7px; background:transparent; color:var(--muted); cursor:pointer; font-family:inherit; }
+  .cfm-close,.cfm-apply{ flex:1; padding:7px; font-size:12px; border:none; border-radius:7px; background:var(--navy); color:#fff; cursor:pointer; font-family:inherit; }
+  .cfm-num{ margin-bottom:6px; }
+  .cfm-op{ width:100%; padding:7px 8px; font-size:12px; border:1px solid var(--line); border-radius:7px; background:var(--field); color:var(--ink); font-family:inherit; margin-bottom:8px; }
+  .cfm-num-inputs{ display:flex; align-items:center; gap:6px; }
+  .cfm-num-inputs input{ width:100%; min-width:0; padding:7px 8px; font-size:13px; border:1px solid var(--line); border-radius:7px; font-family:inherit; }
+  .cfm-and{ font-size:12px; color:var(--muted); }
+  #caseModal{ position:fixed; inset:0; z-index:1300; background:rgba(10,26,48,.55); display:flex; align-items:flex-start; justify-content:center; padding:30px 16px; overflow-y:auto; }
+  #caseModal[hidden]{ display:none; }
+  .cmodal-card{ background:#fff; border-radius:14px; width:100%; max-width:620px; padding:20px 22px; box-shadow:0 20px 60px rgba(10,26,48,.4); }
+  .cmodal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .cmodal-head h3{ font-family:'Fraunces',serif; margin:0; color:var(--navy); font-size:19px; }
+  .cmodal-x{ background:transparent; border:none; font-size:24px; line-height:1; color:var(--muted); cursor:pointer; }
+  .cmodal-find{ margin-bottom:14px; }
+  .cmodal-find input{ width:100%; padding:9px 12px; font-size:14px; border:1px solid var(--line); border-radius:9px; background:var(--field); font-family:inherit; }
+  .cmodal-find-results{ display:none; margin-top:6px; border:1px solid var(--line); border-radius:9px; overflow:hidden; }
+  .cmodal-find-results.show{ display:block; }
+  .cmfr-warn{ font-size:12px; color:var(--warn); font-weight:600; padding:8px 10px; background:rgba(176,105,31,.08); }
+  .cmfr-row{ display:flex; align-items:center; gap:10px; padding:7px 10px; border-top:1px solid var(--line); }
+  .cmfr-row span:first-child{ font-weight:600; font-size:13px; }
+  .cmfr-meta{ font-size:12px; color:var(--muted); }
+  .cmfr-row .cmfr-open{ margin-left:auto; }
+  .cmfr-empty{ font-size:12px; color:var(--muted); padding:8px 10px; }
+  .cmodal-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .cmodal-grid label,.cmodal-grid3 label{ display:flex; flex-direction:column; gap:4px; font-size:12px; font-weight:600; color:var(--muted); }
+  .cmodal-grid input,.cmodal-grid select,.cmodal-grid3 select{ padding:9px 10px; font-size:14px; border:1px solid var(--line); border-radius:8px; font-family:inherit; color:var(--ink); background:#fff; }
+  .cmodal-weeks{ margin-top:16px; border-top:1px solid var(--line); padding-top:14px; }
+  .cmodal-weeks h4{ margin:0 0 10px; font-size:14px; color:var(--navy); }
+  .cmodal-grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  .cmodal-status{ font-size:12px; color:var(--muted); min-height:16px; margin-top:10px; }
+  .cmodal-foot{ display:flex; align-items:center; gap:10px; margin-top:14px; }
+  .cmodal-btn{ padding:9px 16px; font-size:13px; font-weight:700; border-radius:8px; cursor:pointer; font-family:inherit; border:1px solid var(--line-strong); background:#fff; color:var(--navy); }
+  .cmodal-btn.primary{ background:var(--navy); color:#fff; border-color:var(--navy); }
+  .cmodal-btn.ghost{ background:transparent; }
+  .cmodal-btn.danger{ background:transparent; color:var(--warn); border-color:rgba(176,105,31,.5); }
+  @media (max-width:600px){ .cmodal-grid,.cmodal-grid3{ grid-template-columns:1fr; } }
+  @media print{ .cases-bar,.cs-actions,#caseFilterMenu,#caseModal{ display:none !important; } }
 </style>
 </head>
 <body>
@@ -474,7 +541,7 @@ function renderSnapshot(person, week, mode){
       '<div class="cases-page">' + renderCasesList(casesFor(week, person)) + '</div>';
   }
   return '<div class="report-cols"><div>'+renderMix(st)+renderRevenue(st)+'</div><div>'+snapCard+'</div></div>' +
-    renderCasesList(casesFor(week, person));
+    renderCasesList(casesForList(week, person));
 }
 
 function renderRevenue(st){
@@ -497,6 +564,354 @@ function renderMix(st){
     '<tfoot><tr><td>Total</td><td>'+tOp+'</td><td>'+tSubN+'</td><td>'+money(tSub)+'</td><td>'+tClN+'</td><td>'+money(tCl)+'</td></tr></tfoot></table></div></section>';
 }
 
+/* ============================================================
+   Cases this week — interactive toolkit (ported from the form):
+   Excel-style column filters, view-all, export, and full editing
+   (add / edit / delete / correct-weeks) for partners.
+   ============================================================ */
+const CASE_FILTER_COLS = {
+  source:           function(c){ return [c.source||""]; },
+  product:          function(c){ return [c.product||""]; },
+  state:            function(c){ return [c.state||""]; },
+  submitting_agent: function(c){ return [c.submitting_agent||""].concat(coCredit(c)); }
+};
+const CASE_NUM_COLS = {
+  amount: function(c){ return num(c.amount); },
+  aum:    function(c){ return num(c.aum); }
+};
+let caseColFilters = {};   // key -> Set (categorical) or {op,a,b} (numeric)
+let casesViewAll = false;  // show every week (incl. Lost) in the list
+let casesSource = [];      // unfiltered cases feeding the list (for the filter menus)
+let casesDisplayed = [];   // filtered+sorted rows actually shown (for Export)
+function anyCaseFilter(){ for(var k in caseColFilters){ if(caseColFilters[k]) return true; } return false; }
+function caseNumMatch(n, f){
+  if(f.op==="gte")     return n >= f.a;
+  if(f.op==="lte")     return n <= f.a;
+  if(f.op==="eq")      return n === f.a;
+  if(f.op==="between") return n >= f.a && n <= f.b;
+  return true;
+}
+function caseMatchesFilters(c){
+  for(var key in caseColFilters){
+    var f = caseColFilters[key];
+    if(!f) continue;
+    if(CASE_NUM_COLS[key]){ if(!caseNumMatch(CASE_NUM_COLS[key](c), f)) return false; }
+    else if(CASE_FILTER_COLS[key]){
+      var vals = CASE_FILTER_COLS[key](c).filter(Boolean);
+      if(!vals.some(function(v){ return f.has(v); })) return false;
+    }
+  }
+  return true;
+}
+function caseDistinct(key){
+  var seen={}, out=[];
+  (casesSource||[]).forEach(function(c){
+    CASE_FILTER_COLS[key](c).filter(Boolean).forEach(function(v){ if(!seen[v]){ seen[v]=1; out.push(v); } });
+  });
+  out.sort(function(a,b){ var x=String(a).toLowerCase(), y=String(b).toLowerCase(); return x<y?-1:(x>y?1:0); });
+  return out;
+}
+/* which cases feed the list, honoring View all */
+function casesForList(week, person){ return casesViewAll ? casesFor("", person) : casesFor(week, person); }
+
+/* — Floating column-filter menu (body-level, survives report re-renders) — */
+var caseFilterMenu = document.createElement("div");
+caseFilterMenu.id = "caseFilterMenu";
+caseFilterMenu.hidden = true;
+document.body.appendChild(caseFilterMenu);
+var caseFilterKey = null;
+function caseCatMenuHtml(key){
+  var allowed = caseColFilters[key];
+  var rows = caseDistinct(key).map(function(v){
+    var checked = !allowed || allowed.has(v);
+    return '<label class="cfm-row"><input type="checkbox" class="cfm-val" value="'+esc(v)+'"'+(checked?' checked':'')+'><span>'+esc(v)+'</span></label>';
+  }).join("");
+  return '<div class="cfm-sort"><button type="button" class="cfm-sortbtn" data-dir="1">Sort A→Z</button><button type="button" class="cfm-sortbtn" data-dir="-1">Sort Z→A</button></div>'+
+    '<label class="cfm-row cfm-allrow"><input type="checkbox" class="cfm-all"'+(!allowed?' checked':'')+'><span>(Select all)</span></label>'+
+    '<div class="cfm-list">'+(rows||'<div class="cfm-empty">No values</div>')+'</div>'+
+    '<div class="cfm-foot"><button type="button" class="cfm-clear">Clear</button><button type="button" class="cfm-close">Done</button></div>';
+}
+function caseNumMenuHtml(key){
+  var f = caseColFilters[key] || {};
+  var op = f.op || "gte", a=(f.a!=null?f.a:""), b=(f.b!=null?f.b:"");
+  var between = op==="between";
+  function o(v,l){ return '<option value="'+v+'"'+(op===v?" selected":"")+'>'+l+'</option>'; }
+  return '<div class="cfm-sort"><button type="button" class="cfm-sortbtn" data-dir="1">Sort Low→High</button><button type="button" class="cfm-sortbtn" data-dir="-1">Sort High→Low</button></div>'+
+    '<div class="cfm-num"><select class="cfm-op">'+o("gte","Greater than or equal to")+o("lte","Less than or equal to")+o("between","Between")+o("eq","Equal to")+'</select>'+
+    '<div class="cfm-num-inputs"><input type="number" class="cfm-a" inputmode="decimal" placeholder="$ amount" value="'+esc(String(a))+'">'+
+    '<span class="cfm-and"'+(between?"":' style="display:none"')+'>and</span>'+
+    '<input type="number" class="cfm-b" inputmode="decimal" placeholder="$ amount" value="'+esc(String(b))+'"'+(between?"":' style="display:none"')+'></div></div>'+
+    '<div class="cfm-foot"><button type="button" class="cfm-clear">Clear</button><button type="button" class="cfm-apply">Apply</button></div>';
+}
+function openCaseFilter(key, headerEl){
+  caseFilterKey = key;
+  caseFilterMenu.innerHTML = CASE_NUM_COLS[key] ? caseNumMenuHtml(key) : caseCatMenuHtml(key);
+  var r = headerEl.getBoundingClientRect(), mw=230;
+  caseFilterMenu.hidden = false;
+  caseFilterMenu.style.top = (r.bottom+4)+"px";
+  caseFilterMenu.style.left = Math.max(8, Math.min(r.left, window.innerWidth-mw-10))+"px";
+  caseFilterMenu.style.width = mw+"px";
+}
+function closeCaseFilter(){ caseFilterMenu.hidden = true; caseFilterKey = null; }
+function applyCatFilter(){
+  if(!caseFilterKey) return;
+  var boxes = Array.prototype.slice.call(caseFilterMenu.querySelectorAll(".cfm-val"));
+  var checked = boxes.filter(function(b){return b.checked;}).map(function(b){return b.value;});
+  if(checked.length===boxes.length) delete caseColFilters[caseFilterKey];
+  else caseColFilters[caseFilterKey] = new Set(checked);
+  render();
+}
+function applyNumFilterCase(){
+  if(!caseFilterKey) return;
+  var opEl=caseFilterMenu.querySelector(".cfm-op"); if(!opEl) return;
+  var op=opEl.value;
+  var a=parseFloat((caseFilterMenu.querySelector(".cfm-a")||{}).value);
+  var b=parseFloat((caseFilterMenu.querySelector(".cfm-b")||{}).value);
+  if(isNaN(a)) delete caseColFilters[caseFilterKey];
+  else if(op==="between"){ if(isNaN(b)) b=a; caseColFilters[caseFilterKey]={op:"between",a:Math.min(a,b),b:Math.max(a,b)}; }
+  else caseColFilters[caseFilterKey]={op:op,a:a};
+  closeCaseFilter(); render();
+}
+caseFilterMenu.addEventListener("click", function(e){
+  var sb=e.target.closest(".cfm-sortbtn");
+  if(sb){ casesSortKey=caseFilterKey; casesSortDir=parseInt(sb.getAttribute("data-dir"),10)||1; render(); return; }
+  if(e.target.closest(".cfm-apply")){ applyNumFilterCase(); return; }
+  if(e.target.closest(".cfm-clear")){ if(caseFilterKey) delete caseColFilters[caseFilterKey]; closeCaseFilter(); render(); return; }
+  if(e.target.closest(".cfm-close")){ closeCaseFilter(); return; }
+});
+caseFilterMenu.addEventListener("change", function(e){
+  if(e.target.classList.contains("cfm-op")){
+    var between=e.target.value==="between";
+    var andEl=caseFilterMenu.querySelector(".cfm-and"), bEl=caseFilterMenu.querySelector(".cfm-b");
+    if(andEl) andEl.style.display=between?"":"none";
+    if(bEl) bEl.style.display=between?"":"none";
+    return;
+  }
+  if(e.target.classList.contains("cfm-all")){
+    var on=e.target.checked;
+    Array.prototype.slice.call(caseFilterMenu.querySelectorAll(".cfm-val")).forEach(function(b){ b.checked=on; });
+    applyCatFilter();
+  } else if(e.target.classList.contains("cfm-val")){
+    var boxes=Array.prototype.slice.call(caseFilterMenu.querySelectorAll(".cfm-val"));
+    var allEl=caseFilterMenu.querySelector(".cfm-all"); if(allEl) allEl.checked=boxes.every(function(b){return b.checked;});
+    applyCatFilter();
+  }
+});
+document.addEventListener("click", function(e){
+  if(caseFilterMenu.hidden) return;
+  if(e.target.closest("#caseFilterMenu") || e.target.closest(".cs-filter")) return;
+  closeCaseFilter();
+});
+
+/* — Export the shown rows (filtered + sorted) as CSV — */
+function exportCases(){
+  var rows = casesDisplayed || [];
+  if(!rows.length) return;
+  var cols = [
+    ["Client", function(c){return c.client_name||"";}],
+    ["Source", function(c){return c.source||"";}],
+    ["Product", function(c){return c.product||"";}],
+    ["Stage", function(c){return c.state||"";}],
+    ["Amount", function(c){return num(c.amount);}],
+    ["AUM", function(c){return num(c.aum);}],
+    ["Main Agent", function(c){return c.submitting_agent||"";}],
+    ["Co-Credit", function(c){return coCredit(c).join("; ");}],
+    ["Opened Week", function(c){return c.opened_week||ymd(c.week_ending)||"";}],
+    ["Submitted Week", function(c){return c.submitted_week||"";}],
+    ["Closed Week", function(c){return c.closed_week||"";}]
+  ];
+  function ce(v){ var s=String(v==null?"":v); return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }
+  var lines=[cols.map(function(c){return ce(c[0]);}).join(",")];
+  rows.forEach(function(c){ lines.push(cols.map(function(col){return ce(col[1](c));}).join(",")); });
+  var blob=new Blob(["﻿"+lines.join("\r\n")],{type:"text/csv;charset=utf-8;"});
+  var url=URL.createObjectURL(blob), a=document.createElement("a");
+  var tag = casesViewAll ? "all-weeks" : (CURRENT_WEEK||"week");
+  a.href=url; a.download="rwg-cases-"+tag+"-"+new Date().toISOString().slice(0,10)+".csv";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+}
+
+/* — Print just the Cases table (the current filtered/sorted view) — */
+function renderCasesPrint(cases){
+  var title = 'Cases this week'+(casesViewAll?' — all weeks':'')+(anyCaseFilter()?' — filtered':'');
+  var head = '<h2 class="person-title">'+title+'</h2>';
+  if(!cases.length) return head+'<section class="card"><p style="color:var(--muted);font-size:13px;">No cases.</p></section>';
+  var rows = cases.map(function(c){
+    var co = coCredit(c);
+    var ag = '<div class="cs-agent-main">'+esc(c.submitting_agent||"")+'</div>'+co.map(function(n){ return '<div class="cs-agent-sub">'+esc(n)+'</div>'; }).join("");
+    return '<tr><td>'+esc(c.client_name)+'</td><td>'+esc(c.source)+'</td><td>'+esc(c.product)+'</td><td>'+esc(c.state)+'</td><td>'+money(num(c.amount))+'</td><td>'+(num(c.aum)?money(num(c.aum)):'')+'</td><td>'+ag+'</td></tr>';
+  }).join("");
+  var tAmt = cases.reduce(function(s,c){ return s + num(c.amount); }, 0);
+  var tAum = cases.reduce(function(s,c){ return s + num(c.aum); }, 0);
+  return head+'<section class="card"><div class="tscroll"><table class="grid">'+
+    '<thead><tr><th>Client</th><th>Source</th><th>Product</th><th>State</th><th>$ Amount</th><th>AUM</th><th>Agent</th></tr></thead>'+
+    '<tbody>'+rows+'</tbody>'+
+    '<tfoot><tr><td colspan="4">TOTAL ('+cases.length+' case'+(cases.length!==1?'s':'')+')</td><td>'+money(tAmt)+'</td><td>'+money(tAum)+'</td><td></td></tr></tfoot>'+
+    '</table></div></section>';
+}
+function printCases(){
+  var body=document.getElementById("report-body");
+  var saved=body.innerHTML;
+  // Keep the page's own masthead at the top; no extra injected logo.
+  body.innerHTML = renderCasesPrint(casesDisplayed);
+  window.print();
+  setTimeout(function(){ body.innerHTML = saved; }, 1500);
+}
+
+/* — Writes: create / update / delete / set-weeks (POST, no-cors) — */
+function postCase(payload, done){
+  fetch(ENDPOINT, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(payload) })
+    .then(function(){ done(true); }).catch(function(){ done(false); });
+}
+/* Friday options for the Correct-the-weeks pickers */
+function fridayOptions(selected, includeNone){
+  var year=new Date().getFullYear(), ys=new Date(year,0,1);
+  var first=new Date(ys); first.setDate(ys.getDate()+(5-ys.getDay()+7)%7);
+  var opts=[], has=false;
+  for(var i=0;i<52;i++){
+    var fri=new Date(first); fri.setDate(first.getDate()+i*7);
+    var iso=fri.toISOString().slice(0,10);
+    var label='Fri '+fri.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    if(iso===selected) has=true;
+    opts.push('<option value="'+iso+'"'+(iso===selected?' selected':'')+'>'+label+'</option>');
+  }
+  if(selected && !has) opts.unshift('<option value="'+selected+'" selected>'+selected+'</option>');
+  if(includeNone) opts.unshift('<option value=""'+(!selected?' selected':'')+'>none</option>');
+  return opts.join("");
+}
+
+/* — Case editor modal (add / edit / delete / correct-weeks / find existing) — */
+var caseModal = document.createElement("div");
+caseModal.id = "caseModal";
+caseModal.hidden = true;
+document.body.appendChild(caseModal);
+var editingCase = null;
+function caseModalHtml(c){
+  c = c || {};
+  var isEdit = !!c.record_id;
+  var agentOpts = PEOPLE.map(function(p){ return '<option value="'+esc(p)+'"'+(c.submitting_agent===p?' selected':'')+'>'+esc(p)+'</option>'; }).join("");
+  var coNames = coCredit(c);
+  var coOpts = PEOPLE.map(function(p){ return '<option value="'+esc(p)+'"'+(coNames.indexOf(p)>=0?' selected':'')+'>'+esc(p)+'</option>'; }).join("");
+  var srcOpts = '<option value="">- source -</option>'+Object.keys(SOURCE_PREMIUM).map(function(s){ return '<option value="'+esc(s)+'"'+(c.source===s?' selected':'')+'>'+esc(s)+'</option>'; }).join("");
+  var prodOpts = '<option value="">- product -</option>'+PRODUCTS.map(function(p){ return '<option value="'+esc(p)+'"'+(c.product===p?' selected':'')+'>'+esc(p)+'</option>'; }).join("");
+  var stateOpts = ["Opened","Submitted","Closed","Lost"].map(function(s){ return '<option'+(c.state===s?' selected':'')+'>'+s+'</option>'; }).join("");
+  return '<div class="cmodal-card">'+
+    '<div class="cmodal-head"><h3>'+(isEdit?"Edit case":"Add a case")+'</h3><button type="button" class="cmodal-x" id="cmX">&times;</button></div>'+
+    '<div class="cmodal-find"><input type="text" id="cmFind" placeholder="&#128269; Find an existing case by client name (any week)…" autocomplete="off"><div id="cmFindResults" class="cmodal-find-results"></div></div>'+
+    '<div class="cmodal-grid">'+
+      '<label>Credit to<select id="cmAgent">'+agentOpts+'</select></label>'+
+      '<label>Opened with (Ctrl/Cmd-click)<select id="cmCo" multiple size="3">'+coOpts+'</select></label>'+
+      '<label>Client name<input type="text" id="cmClient" value="'+esc(c.client_name||"")+'" autocomplete="off"></label>'+
+      '<label>Source<select id="cmSource">'+srcOpts+'</select></label>'+
+      '<label>Product<select id="cmProduct">'+prodOpts+'</select></label>'+
+      '<label>Stage<select id="cmState">'+stateOpts+'</select></label>'+
+      '<label>$ Amount<input type="number" id="cmAmount" min="0" step="0.01" value="'+esc(c.amount!=null?c.amount:"")+'"></label>'+
+      '<label>AUM<input type="number" id="cmAum" min="0" step="1" value="'+esc(c.aum!=null?c.aum:"")+'"></label>'+
+    '</div>'+
+    (isEdit ? '<div class="cmodal-weeks"><h4>Correct the weeks</h4><div class="cmodal-grid3">'+
+      '<label>Opened week<select id="cmWkOpened">'+fridayOptions(c.opened_week||ymd(c.week_ending)||"", false)+'</select></label>'+
+      '<label>Submitted week<select id="cmWkSub">'+fridayOptions(c.submitted_week||"", true)+'</select></label>'+
+      '<label>Closed week<select id="cmWkClosed">'+fridayOptions(c.closed_week||"", true)+'</select></label>'+
+      '</div><button type="button" id="cmApplyWeeks" class="cmodal-btn ghost" style="margin-top:10px;">Apply week corrections</button></div>' : '')+
+    '<div id="cmStatus" class="cmodal-status"></div>'+
+    '<div class="cmodal-foot">'+
+      (isEdit ? '<button type="button" id="cmDelete" class="cmodal-btn danger">Delete</button>' : '')+
+      '<span style="flex:1"></span>'+
+      '<button type="button" id="cmCancel" class="cmodal-btn ghost">Cancel</button>'+
+      '<button type="button" id="cmSave" class="cmodal-btn primary">'+(isEdit?"Save changes":"Add case")+'</button>'+
+    '</div>'+
+  '</div>';
+}
+function openCaseModal(c){
+  editingCase = (c && c.record_id) ? c : null;
+  caseModal.innerHTML = caseModalHtml(c||{});
+  caseModal.hidden = false;
+  if(!editingCase){
+    var who=document.getElementById("whoSel").value, ag=document.getElementById("cmAgent");
+    if(ag && who && who!=="__team__") ag.value=who;
+  }
+  var cl=document.getElementById("cmClient"); if(cl) cl.focus();
+}
+function closeCaseModal(){ caseModal.hidden = true; editingCase = null; }
+function modalStatus(msg){ var s=document.getElementById("cmStatus"); if(s) s.textContent=msg||""; }
+function caseFindRow(c){
+  return '<div class="cmfr-row"><span>'+esc(c.client_name||"(no name)")+'</span><span class="cmfr-meta">'+esc(c.product||"")+' · '+esc(c.state||"")+' · '+esc(c.submitting_agent||"")+'</span><button type="button" class="cmfr-open cmodal-btn ghost" data-id="'+esc(c.record_id)+'">Open</button></div>';
+}
+function runFind(q){
+  var box=document.getElementById("cmFindResults"); if(!box) return;
+  q=String(q||"").trim().toLowerCase();
+  if(q.length<2){ box.innerHTML=""; box.classList.remove("show"); return; }
+  var hits=DATA.cases.filter(function(c){ return String(c.client_name||"").toLowerCase().indexOf(q)>=0; }).slice(0,12);
+  box.classList.add("show");
+  box.innerHTML = hits.length ? hits.map(caseFindRow).join("") : '<div class="cmfr-empty">No matches.</div>';
+}
+function dupHint(name){
+  var box=document.getElementById("cmFindResults"); if(!box) return;
+  function tokens(s){ return String(s||"").trim().toLowerCase().split(/\s+/).filter(Boolean); }
+  var n=String(name||"").trim().toLowerCase(), tn=tokens(name);
+  if(n.length<2){ box.innerHTML=""; box.classList.remove("show"); return; }
+  var hits=DATA.cases.filter(function(c){
+    var cn=String(c.client_name||"").toLowerCase(); if(!cn) return false;
+    var tc=tokens(c.client_name);
+    var sameFL = tn.length>=2 && tc.length>=2 && tn[0]===tc[0] && tn[tn.length-1]===tc[tc.length-1];
+    return cn.indexOf(n)>=0 || n.indexOf(cn)>=0 || sameFL;
+  }).slice(0,12);
+  box.classList.toggle("show", hits.length>0);
+  box.innerHTML = hits.length ? ('<div class="cmfr-warn">&#9888; Possible existing case(s) for this client. Open one to advance it instead of adding a duplicate.</div>'+hits.map(caseFindRow).join("")) : "";
+}
+function saveCaseModal(){
+  var client=(document.getElementById("cmClient").value||"").trim();
+  if(!client){ modalStatus("Enter a client name."); return; }
+  var isEdit=!!(editingCase && editingCase.record_id);
+  var id=isEdit?editingCase.record_id:((window.crypto&&crypto.randomUUID)?crypto.randomUUID():("id-"+Date.now()+"-"+Math.random().toString(36).slice(2)));
+  var submitter=document.getElementById("cmAgent").value || (isEdit?editingCase.submitting_agent:"");
+  var coSel=document.getElementById("cmCo");
+  var coNames=coSel?Array.prototype.slice.call(coSel.selectedOptions).map(function(o){return o.value;}).filter(function(v){return v && v!==submitter;}):[];
+  var week=isEdit?(ymd(editingCase.week_ending)||CURRENT_WEEK):CURRENT_WEEK;
+  var payload={ action:isEdit?"updateCase":"createCase", record_id:id,
+    week_ending: week || CURRENT_WEEK,
+    submitting_agent:submitter, client_name:client,
+    source:document.getElementById("cmSource").value||"",
+    product:document.getElementById("cmProduct").value||"",
+    state:document.getElementById("cmState").value,
+    amount:parseFloat(document.getElementById("cmAmount").value)||0,
+    aum:parseFloat(document.getElementById("cmAum").value)||0,
+    agent_involved: coNames.length?coNames.join("; "):"None" };
+  modalStatus(isEdit?"Updating…":"Saving…");
+  postCase(payload, function(ok){ if(ok){ closeCaseModal(); setTimeout(loadData, 900); } else modalStatus("Save failed (check connection)."); });
+}
+function deleteCaseModal(){
+  if(!(editingCase && editingCase.record_id)) return;
+  if(!window.confirm("Delete "+(editingCase.client_name||"this case")+"? This cannot be undone.")) return;
+  modalStatus("Deleting…");
+  postCase({ action:"deleteCase", record_id:editingCase.record_id, passphrase:REPORT_PASSPHRASE }, function(ok){
+    if(ok){ closeCaseModal(); setTimeout(loadData, 900); } else modalStatus("Delete failed.");
+  });
+}
+function applyWeeksModal(){
+  if(!(editingCase && editingCase.record_id)) return;
+  var opened=(document.getElementById("cmWkOpened")||{}).value||"";
+  var sub=(document.getElementById("cmWkSub")||{}).value||"";
+  var closed=(document.getElementById("cmWkClosed")||{}).value||"";
+  if(!opened){ modalStatus("Pick an opened week."); return; }
+  modalStatus("Applying week corrections…");
+  postCase({ action:"setCaseWeeks", record_id:editingCase.record_id, passphrase:REPORT_PASSPHRASE, opened_week:opened, submitted_week:sub, closed_week:closed }, function(ok){
+    if(ok){ closeCaseModal(); setTimeout(loadData, 900); } else modalStatus("Could not apply.");
+  });
+}
+caseModal.addEventListener("click", function(e){
+  if(e.target===caseModal || e.target.closest("#cmX") || e.target.closest("#cmCancel")){ closeCaseModal(); return; }
+  if(e.target.closest("#cmSave")){ saveCaseModal(); return; }
+  if(e.target.closest("#cmDelete")){ deleteCaseModal(); return; }
+  if(e.target.closest("#cmApplyWeeks")){ applyWeeksModal(); return; }
+  var fr=e.target.closest(".cmfr-open");
+  if(fr){ var cc=DATA.cases.find(function(x){return String(x.record_id)===String(fr.getAttribute("data-id"));}); if(cc) openCaseModal(cc); return; }
+});
+caseModal.addEventListener("input", function(e){
+  if(e.target.id==="cmFind") runFind(e.target.value);
+  else if(e.target.id==="cmClient" && !editingCase) dupHint(e.target.value);
+});
+
 let casesSortKey=null, casesSortDir=1;
 const CASES_COLS = [
   {label:"Client", key:"client_name"},
@@ -508,27 +923,48 @@ const CASES_COLS = [
   {label:"Agent", key:"submitting_agent"}
 ];
 function renderCasesList(cases){
-  if(!cases.length) return '<section class="card"><div class="eyebrow"><span class="dot"></span><span>Cases this week</span></div><p style="color:var(--muted);font-size:13px;">No cases logged.</p></section>';
-  let view = cases.slice();
+  casesSource = cases || [];
+  var filtered = casesSource.filter(caseMatchesFilters);
+  var view = filtered.slice();
   if(casesSortKey){
-    const isNum = CASES_COLS.some(function(c){ return c.key===casesSortKey && c.num; });
+    var isNum = CASES_COLS.some(function(c){ return c.key===casesSortKey && c.num; });
     view.sort(function(a,b){
       if(isNum) return (num(a[casesSortKey]) - num(b[casesSortKey])) * casesSortDir;
-      const va=String(a[casesSortKey]||"").toLowerCase(), vb=String(b[casesSortKey]||"").toLowerCase();
+      var va=String(a[casesSortKey]||"").toLowerCase(), vb=String(b[casesSortKey]||"").toLowerCase();
       return va<vb ? -casesSortDir : (va>vb ? casesSortDir : 0);
     });
   }
-  const th = CASES_COLS.map(function(col){
-    const arrow = (casesSortKey===col.key) ? (casesSortDir>0?' ▲':' ▼') : '';
+  casesDisplayed = view;
+  var totAmt = view.reduce(function(s,c){ return s + num(c.amount); }, 0);
+  var totAum = view.reduce(function(s,c){ return s + num(c.aum); }, 0);
+  var toolbar = '<div class="cases-bar">'+
+    '<button type="button" class="cases-btn" id="caseAddBtn">+ Add case</button>'+
+    '<button type="button" class="cases-btn'+(casesViewAll?' on':'')+'" id="caseViewAllBtn">'+(casesViewAll?"Show this week only":"View all cases")+'</button>'+
+    '<button type="button" class="cases-btn" id="caseExportBtn">&#11015; Export</button>'+
+    '<button type="button" class="cases-btn" id="casePrintBtn">&#128424; Print</button>'+
+    (anyCaseFilter()?'<button type="button" class="cases-btn" id="caseClearBtn">&#10005; Clear filters</button>':'')+
+    '<span class="cases-count">'+view.length+' case'+(view.length!==1?'s':'')+(anyCaseFilter()?' (filtered)':'')+(casesViewAll?' · all weeks':'')+'</span>'+
+    '<span class="cases-total">TOTAL &nbsp; Amount '+money(totAmt)+' &nbsp;&middot;&nbsp; AUM '+money(totAum)+'</span>'+
+  '</div>';
+  var th = CASES_COLS.map(function(col){
+    var arrow = (casesSortKey===col.key) ? (casesSortDir>0?' ▲':' ▼') : '';
+    if(CASE_FILTER_COLS[col.key] || CASE_NUM_COLS[col.key]){
+      var on = caseColFilters[col.key] ? ' cs-filtered' : '';
+      return '<th class="cs-filter'+on+'" data-filter="'+col.key+'">'+col.label+arrow+' <span class="cs-funnel">▾</span></th>';
+    }
     return '<th class="cs-sort" data-sort="'+col.key+'">'+col.label+arrow+'</th>';
-  }).join('');
-  const rows = view.map(function(c){
-    const shared = coCredit(c);
-    const badge = shared.length ? ' <span class="shared-tag" title="Shared credit: '+esc(shared.join(', '))+'">shared</span>' : '';
-    return '<tr><td>'+esc(c.client_name)+badge+'</td><td>'+esc(c.source)+'</td><td>'+esc(c.product)+'</td><td>'+esc(c.state)+'</td><td>'+money(num(c.amount))+'</td><td>'+(num(c.aum)?money(num(c.aum)):'')+'</td><td>'+esc(c.submitting_agent)+'</td></tr>';
+  }).join('') + '<th class="cs-actions"></th>';
+  var rows = view.map(function(c){
+    var co = coCredit(c);
+    var agentCell = '<div class="cs-agent-main">'+esc(c.submitting_agent||"")+'</div>'+co.map(function(n){ return '<div class="cs-agent-sub">'+esc(n)+'</div>'; }).join("");
+    return '<tr><td>'+esc(c.client_name)+'</td><td>'+esc(c.source)+'</td><td>'+esc(c.product)+'</td><td>'+esc(c.state)+'</td><td>'+money(num(c.amount))+'</td><td>'+(num(c.aum)?money(num(c.aum)):'')+'</td>'+
+      '<td>'+agentCell+'</td>'+
+      '<td class="cs-actions"><button type="button" class="cs-edit" data-id="'+esc(c.record_id)+'">Edit</button> <button type="button" class="cs-del" data-id="'+esc(c.record_id)+'">Del</button></td></tr>';
   }).join("");
-  return '<section class="card"><div class="eyebrow"><span class="dot"></span><span>Cases this week</span></div>'+
-    '<div class="tscroll"><table class="grid"><thead><tr>'+th+'</tr></thead><tbody>'+rows+'</tbody></table></div></section>';
+  var body = view.length
+    ? '<div class="tscroll"><table class="grid"><thead><tr>'+th+'</tr></thead><tbody>'+rows+'</tbody></table></div>'
+    : '<p style="color:var(--muted);font-size:13px;">'+(anyCaseFilter()?"No cases match your filters.":"No cases logged.")+'</p>';
+  return '<section class="card"><div class="eyebrow"><span class="dot"></span><span>Cases this week</span></div>'+toolbar+body+'</section>';
 }
 
 /* ── Team report ─────────────────────────────────────────── */
@@ -564,7 +1000,7 @@ function renderTeam(week){
   }).join("");
   const leadCard = '<section class="card"><div class="eyebrow"><span class="dot"></span><span>By person this week</span></div>'+
     '<div class="tscroll"><table class="lead"><thead><tr><th>Agent</th><th>Goals</th><th>Opps</th><th>Subm.</th><th>Closed</th><th>Premium</th><th>FYC closed</th><th>AUM</th></tr></thead><tbody>'+lead+'</tbody></table></div></section>';
-  return totals + leadCard + '<div class="pbreak">'+renderMix(all)+'</div>' + renderCasesList(casesFor(week, null));
+  return totals + leadCard + '<div class="pbreak">'+renderMix(all)+'</div>' + renderCasesList(casesForList(week, null));
 }
 
 /* ── Render the current selection ────────────────────────── */
@@ -600,11 +1036,25 @@ function renderAll(){
 /* ── Wire up ─────────────────────────────────────────────── */
 document.getElementById("weekSel").addEventListener("change", render);
 document.getElementById("report-body").addEventListener("click", function(e){
-  const h = e.target.closest(".cs-sort");
-  if(!h) return;
-  const k = h.getAttribute("data-sort");
-  if(casesSortKey===k) casesSortDir = -casesSortDir; else { casesSortKey = k; casesSortDir = 1; }
-  render();
+  var h = e.target.closest(".cs-sort");
+  if(h){ var k = h.getAttribute("data-sort"); if(casesSortKey===k) casesSortDir = -casesSortDir; else { casesSortKey = k; casesSortDir = 1; } render(); return; }
+  var fh = e.target.closest(".cs-filter");
+  if(fh){ e.stopPropagation(); openCaseFilter(fh.getAttribute("data-filter"), fh); return; }
+  if(e.target.closest("#caseAddBtn")){ openCaseModal(null); return; }
+  if(e.target.closest("#caseViewAllBtn")){ casesViewAll = !casesViewAll; render(); return; }
+  if(e.target.closest("#caseExportBtn")){ exportCases(); return; }
+  if(e.target.closest("#casePrintBtn")){ printCases(); return; }
+  if(e.target.closest("#caseClearBtn")){ caseColFilters = {}; render(); return; }
+  var ed = e.target.closest(".cs-edit");
+  if(ed){ var ce = DATA.cases.find(function(x){ return String(x.record_id)===String(ed.getAttribute("data-id")); }); if(ce) openCaseModal(ce); return; }
+  var dl = e.target.closest(".cs-del");
+  if(dl){
+    var cd = DATA.cases.find(function(x){ return String(x.record_id)===String(dl.getAttribute("data-id")); });
+    if(cd && window.confirm("Delete "+(cd.client_name||"this case")+"? This cannot be undone.")){
+      postCase({ action:"deleteCase", record_id:cd.record_id, passphrase:REPORT_PASSPHRASE }, function(ok){ if(ok) setTimeout(loadData, 900); });
+    }
+    return;
+  }
 });
 document.getElementById("whoSel").addEventListener("change", render);
 document.getElementById("refresh").addEventListener("click", loadData);
