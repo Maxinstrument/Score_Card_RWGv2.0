@@ -327,6 +327,18 @@
 const ENDPOINT = "https://script.google.com/macros/s/AKfycbyBkStY31dgbEIkVCMFcgfFtM_LbVAtOCrDnzw9tDYIeK7H8cL5xdsTJkBlxZGnaQTN/exec";
 const REPORT_PASSPHRASE = "chairman2026";
 
+/* Favicon: reuse the embedded brand logo so the browser tab shows the RWG mark
+   (no extra weight — points at a logo image already loaded on the page). */
+(function(){
+  var logo = document.getElementById("gate-logo") || document.querySelector(".mast-logo");
+  if(!logo || !logo.src) return;
+  var link = document.querySelector("link[rel~='icon']") || document.createElement("link");
+  link.rel = "icon";
+  link.type = "image/png";
+  link.href = logo.src;
+  if(!link.parentNode) document.head.appendChild(link);
+})();
+
 const PEOPLE = ["Carlos A Temperan","Alejandro Mendieta","Jesus Zamora","Nelson Mompierre Jr.","Maryurie Estrada"];
 const SPRINT = { goalTotal:1000000, weeks:25, startingFyc:160000, start:"2026-06-08" };
 const WEEKLY_PREMIUM_TARGET = 6000;
