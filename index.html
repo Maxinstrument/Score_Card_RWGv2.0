@@ -1579,6 +1579,39 @@ async function submitWeek(){
   }
 }
 
+/* Restore the agent's saved submission for the selected week (manual fields only:
+   the appointment counts). Everything else is auto-calculated from Team Cases.
+   Uses JSONP like every other read here — plain fetch is blocked by Apps Script CORS. */
+var _lpsSeq = 0;
+function loadPreviousSubmission(){
+  const agentName = document.getElementById("agent").value;
+  const week = document.getElementById("week").value;
+  if(!agentName || !week) return;
+  const seq = ++_lpsSeq;
+
+  const name = "rwg_wk_" + Math.random().toString(36).slice(2);
+  const script = document.createElement("script");
+  let done = false;
+  function cleanup(){ try{ delete window[name]; }catch(e){ window[name]=undefined; } if(script.parentNode) script.parentNode.removeChild(script); }
+  window[name] = function(data){
+    done = true; cleanup();
+    if(seq !== _lpsSeq) return; // a newer request superseded this one
+    if(document.getElementById("agent").value !== agentName) return;
+    if(document.getElementById("week").value !== week) return;
+    if(!data || !data.ok) return; // nothing saved for this agent+week yet
+    const setValue = function(id, val){ const el = document.getElementById(id); if(el) el.value = val || ""; };
+    setValue("fa_sched", data.first_appts_scheduled);
+    setValue("fa_held",  data.first_appts_held);
+    setValue("ca_sched", data.closing_appts_scheduled);
+    setValue("ca_held",  data.closing_appts_held);
+    recalc(); // refresh activity points + the snapshot rail
+  };
+  script.onerror = function(){ if(!done) cleanup(); };
+  script.src = CASES_ENDPOINT + "?action=getWeeklySubmission&agent=" + encodeURIComponent(agentName)
+             + "&week_ending=" + encodeURIComponent(week) + "&callback=" + name + "&_=" + Date.now();
+  document.body.appendChild(script);
+  setTimeout(function(){ if(!done) cleanup(); }, 12000);
+}
 
 // Submit listener attached early — before any IIFE that could throw
 $("btnSubmit").addEventListener("click", function(){
@@ -1807,6 +1840,7 @@ $("btnPrint").addEventListener("click", () => {
       if(partnerUnlocked) applyPartner();
       else { pErr.textContent=''; pIn.value=''; pgate.classList.add('show'); setTimeout(()=>pIn.focus(),50); }
     } else { applyAssociate(); }
+    loadPreviousSubmission();
   }
   function tryUnlock(){
     if(pIn.value === PARTNER_PASSPHRASE){ partnerUnlocked = true; pgate.classList.remove('show'); applyPartner(); }
@@ -2189,6 +2223,7 @@ function postCase(payload, done){
     } else if(document.getElementById("agent").value){
       load();
     }
+    loadPreviousSubmission();
   };
 
   // Edit / delete / sort / filter via event delegation on the list (header is inside it)
