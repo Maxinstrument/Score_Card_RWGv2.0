@@ -849,13 +849,14 @@
         <h2>The week in motion</h2>
         <p class="hint">Top of the funnel to the bottom. These are the numbers that fade from memory, so pull them from your daily tally.</p>
         <div class="funnel">
-          <div class="frow"><div class="step">1</div><div class="flabel">First appointments scheduled<small>A first meeting put on the calendar</small></div><input type="number" id="fa_sched" min="0" inputmode="numeric" placeholder="0"></div>
-          <div class="frow"><div class="step">2</div><div class="flabel">First appointments held<small>The first meeting actually happened</small></div><input type="number" id="fa_held" min="0" inputmode="numeric" placeholder="0"></div>
-          <div class="frow"><div class="step">3</div><div class="flabel">New opportunities opened<small>Calculated from client activity log</small></div><input type="number" id="opp_open" readonly class="calc" placeholder="—"></div>
-          <div class="frow"><div class="step">4</div><div class="flabel">Closing appointments scheduled<small>A presentation or ask meeting on the calendar</small></div><input type="number" id="ca_sched" min="0" inputmode="numeric" placeholder="0"></div>
-          <div class="frow"><div class="step">5</div><div class="flabel">Closing appointments held<small>The closing meeting actually happened</small></div><input type="number" id="ca_held" min="0" inputmode="numeric" placeholder="0"></div>
+          <div class="frow"><div class="step">1</div><div class="flabel">1st meetings scheduled<small>A first meeting put on the calendar</small></div><input type="number" id="fa_sched" min="0" inputmode="numeric" placeholder="0"></div>
+          <div class="frow"><div class="step">2</div><div class="flabel">1st meetings held<small>The first meeting actually happened</small></div><input type="number" id="fa_held" min="0" inputmode="numeric" placeholder="0"></div>
+          <div class="frow"><div class="step">3</div><div class="flabel">Opportunities opened<small>Calculated from client activity log</small></div><input type="number" id="opp_open" readonly class="calc" placeholder="—"></div>
+          <div class="frow"><div class="step">4</div><div class="flabel">2nd meetings scheduled<small>A presentation or ask meeting on the calendar</small></div><input type="number" id="ca_sched" min="0" inputmode="numeric" placeholder="0"></div>
+          <div class="frow"><div class="step">5</div><div class="flabel">2nd meetings held<small>The closing meeting actually happened</small></div><input type="number" id="ca_held" min="0" inputmode="numeric" placeholder="0"></div>
           <div class="frow"><div class="step">6</div><div class="flabel">New business submitted<small>Calculated from client activity log</small></div><input type="number" id="nb_written" readonly class="calc" placeholder="—"></div>
           <div class="frow"><div class="step">7</div><div class="flabel">New business closed<small>Calculated from client activity log</small></div><input type="number" id="nb_closed" readonly class="calc" placeholder="—"></div>
+          <div class="frow"><div class="step">8</div><div class="flabel">Referrals gathered<small>Names given to you this week</small></div><input type="number" id="referrals" min="0" inputmode="numeric" placeholder="0"></div>
         </div>
       </section>
 
@@ -962,13 +963,14 @@
         <tr><th>Activity</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Total</th></tr>
       </thead>
       <tbody>
-        <tr><td>First appts scheduled</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>First appts held</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>New opportunities opened</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>Closing appts scheduled</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
-        <tr><td>Closing appts held</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>1st meetings scheduled</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>1st meetings held</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>Opportunities opened</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>2nd meetings scheduled</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>2nd meetings held</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
         <tr><td>New business submitted</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
         <tr><td>New business closed</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>Referrals gathered</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
       </tbody>
     </table></div>
   </section>
@@ -1088,13 +1090,14 @@ const SUBMIT_ENDPOINT = "https://script.google.com/macros/s/AKfycbyBkStY31dgbEIk
    TYPES .mult: product difficulty multiplier on closed business.
    ------------------------------------------------------------ */
 const ACTIVITY_POINTS = {
-  fa_sched:1,    // first appt scheduled
-  fa_held:2,     // first appt held
+  fa_sched:1,    // 1st meeting scheduled
+  fa_held:2,     // 1st meeting held
   opp_open:2,    // new opportunity opened
-  ca_sched:3,    // closing appt scheduled
-  ca_held:5,     // closing appt held
+  ca_sched:3,    // 2nd meeting scheduled
+  ca_held:5,     // 2nd meeting held
   nb_written:10, // new business submitted
   nb_closed:15,  // new business closed/placed — target 1/wk
+  referrals:3,   // referral gathered — target 1/wk
 };
 const WEEKLY_MIN = 35;          // ASSOCIATE points floor (placeholder; recalibrate after 3-4 weeks)
 const WEEKLY_MIN_PARTNER = 0;   // partners are scored on outcomes (FYC/premium), not an activity floor
@@ -1180,12 +1183,12 @@ function caseCoCredit(c){
 const PREMIUM_PER_AMOUNT = 1/6;
 const PREMIUM_PER_AUM    = 1/500;
 const AGENT_GOALS = {
-  "Jesus Zamora":         { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:500,  firmShare:1.0 },
-  "Maryurie Estrada":     { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:500,  firmShare:1.0 },
-  "Nelson Mompierre Jr.": { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:1000, firmShare:0.5 },
+  "Jesus Zamora":         { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:500,  referrals:1, firmShare:1.0 },
+  "Maryurie Estrada":     { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:500,  referrals:1, firmShare:1.0 },
+  "Nelson Mompierre Jr.": { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:1000, referrals:1, firmShare:0.5 },
   // Partners — placeholder targets (same as associates for now; refine for bigger-client hunting)
-  "Carlos A Temperan":    { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:500,  firmShare:1.0 },
-  "Alejandro Mendieta":   { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:500,  firmShare:1.0 }
+  "Carlos A Temperan":    { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:500,  referrals:1, firmShare:1.0 },
+  "Alejandro Mendieta":   { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:500,  referrals:1, firmShare:1.0 }
 };
 
 function fyc(monthlyPremium){ return monthlyPremium * 12 * CONFIG.COMMISSION_RATE; }
@@ -1457,6 +1460,7 @@ function buildPayload(){
     new_business_closed:    num("nb_closed"),
     revenue_submitted: num("rev_sub"),
     revenue_closed: num("rev_closed"),
+    referrals_gathered: num("referrals"),
     submitted_at: new Date().toISOString()
   };
   TYPES.forEach(t=>{
@@ -1527,13 +1531,14 @@ function summaryText(p){
     "Agent: "+p.agent,
     "Week ending: "+p.week_ending,
     "",
-    "First appts scheduled / held: "+p.first_appts_scheduled+" / "+p.first_appts_held,
+    "1st meetings scheduled / held: "+p.first_appts_scheduled+" / "+p.first_appts_held,
     "Opportunities opened: "+p.opportunities_opened,
-    "Closing appts scheduled / held: "+p.closing_appts_scheduled+" / "+p.closing_appts_held,
+    "2nd meetings scheduled / held: "+p.closing_appts_scheduled+" / "+p.closing_appts_held,
     "New business submitted: "+p.new_business_submitted,
     "New business closed: "+p.new_business_closed,
     "Revenue submitted: "+money(p.revenue_submitted),
-    "Revenue closed: "+money(p.revenue_closed)
+    "Revenue closed: "+money(p.revenue_closed),
+    "Referrals gathered: "+p.referrals_gathered
   ].join("\n");
 }
 
@@ -1604,6 +1609,7 @@ function loadPreviousSubmission(){
     setValue("fa_held",  data.first_appts_held);
     setValue("ca_sched", data.closing_appts_scheduled);
     setValue("ca_held",  data.closing_appts_held);
+    setValue("referrals", data.referrals_gathered);
     recalc(); // refresh activity points + the snapshot rail
   };
   script.onerror = function(){ if(!done) cleanup(); };
@@ -1760,15 +1766,16 @@ function renderMyWeek(){
   const premClosed = GOALS.premiumEquivClosed || 0;
   function cnt(label, val, target){ return { label:label, val:val, target:target, disp:val+" / "+target }; }
   const rows = [
-    cnt("First meetings scheduled",   num("fa_sched"),  goals.firstSched),
-    cnt("First meetings held",        num("fa_held"),   goals.firstHeld),
-    cnt("Opportunities opened",       num("opp_open"),  goals.opps),
-    cnt("Closing meetings scheduled", num("ca_sched"),  goals.closingSched),
-    cnt("Closing meetings run",       num("ca_held"),   goals.closingRun),
-    cnt("New business submitted",     num("nb_written"),goals.nbSub),
-    cnt("New business closed",        num("nb_closed"), goals.nbClosed),
+    cnt("1st meetings scheduled",   num("fa_sched"),  goals.firstSched),
+    cnt("1st meetings held",        num("fa_held"),   goals.firstHeld),
+    cnt("Opportunities opened",     num("opp_open"),  goals.opps),
+    cnt("2nd meetings scheduled",   num("ca_sched"),  goals.closingSched),
+    cnt("2nd meetings held",        num("ca_held"),   goals.closingRun),
+    cnt("New business submitted",   num("nb_written"),goals.nbSub),
+    cnt("New business closed",      num("nb_closed"), goals.nbClosed),
     { label:"Premium closed", val:premClosed, target:goals.closePremium, disp:fmt(premClosed)+" / "+fmt(goals.closePremium),
-      note:"to your goal: "+fmt(premClosed*(goals.firmShare||1)) }
+      note:"to your goal: "+fmt(premClosed*(goals.firmShare||1)) },
+    cnt("Referrals gathered",       num("referrals"), goals.referrals || 1)
   ];
 
   let met = 0;
@@ -1820,8 +1827,8 @@ $("btnPrint").addEventListener("click", () => {
     const row = inp.closest('.frow'); if(!row) return;
     const fl = row.querySelector('.flabel'); if(!fl) return;
     fl.innerHTML = (role==='associate')
-      ? 'Closing Appointments SET<small>The closing meeting put on the calendar</small>'
-      : 'Closing appointments scheduled<small>A presentation or ask meeting on the calendar</small>';
+      ? '2nd meetings scheduled<small>The closing meeting put on the calendar</small>'
+      : '2nd meetings scheduled<small>A presentation or ask meeting on the calendar</small>';
   }
   function applyAssociate(){
     document.body.classList.add('role-associate');

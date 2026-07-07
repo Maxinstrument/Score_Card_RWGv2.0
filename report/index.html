@@ -360,11 +360,11 @@ const SOURCE_PREMIUM = { "Pension Member (Regular)":1000, "Investment Plan":1000
   "Current Client":0, "Other":0 };
 const FIRM_SHARE = { "Nelson Mompierre Jr.":0.5 };  // partner-pool share; others = 1.0
 const AGENT_GOALS = {
-  "Carlos A Temperan":    { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:500 },
-  "Alejandro Mendieta":   { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:500 },
-  "Jesus Zamora":         { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:500 },
-  "Nelson Mompierre Jr.": { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:1000 },
-  "Maryurie Estrada":     { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:500 }
+  "Carlos A Temperan":    { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:500,  referrals:1 },
+  "Alejandro Mendieta":   { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:500,  referrals:1 },
+  "Jesus Zamora":         { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:500,  referrals:1 },
+  "Nelson Mompierre Jr.": { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:1000, referrals:1 },
+  "Maryurie Estrada":     { firstSched:7, firstHeld:5, opps:2, closingSched:2, closingRun:2, nbSub:1, nbClosed:1, closePremium:500,  referrals:1 }
 };
 
 let DATA = { cases:[], weekly:[] };
@@ -546,14 +546,15 @@ function renderSnapshot(person, week, mode){
   const g = AGENT_GOALS[person] || {};
   const fmtc = (v,t)=> v+" / "+t;
   const rows = [
-    {label:"First meetings scheduled", val:num(wk.first_appts_scheduled), target:g.firstSched||0, disp:fmtc(num(wk.first_appts_scheduled),g.firstSched||0)},
-    {label:"First meetings held",      val:num(wk.first_appts_held),      target:g.firstHeld||0,  disp:fmtc(num(wk.first_appts_held),g.firstHeld||0)},
+    {label:"1st meetings scheduled",   val:num(wk.first_appts_scheduled), target:g.firstSched||0, disp:fmtc(num(wk.first_appts_scheduled),g.firstSched||0)},
+    {label:"1st meetings held",        val:num(wk.first_appts_held),      target:g.firstHeld||0,  disp:fmtc(num(wk.first_appts_held),g.firstHeld||0)},
     {label:"Opportunities opened",     val:st.opp,                        target:g.opps||0,       disp:fmtc(st.opp,g.opps||0)},
-    {label:"Closing meetings scheduled",val:num(wk.closing_appts_scheduled),target:g.closingSched||0,disp:fmtc(num(wk.closing_appts_scheduled),g.closingSched||0)},
-    {label:"Closing meetings run",     val:num(wk.closing_appts_held),    target:g.closingRun||0,  disp:fmtc(num(wk.closing_appts_held),g.closingRun||0)},
+    {label:"2nd meetings scheduled",   val:num(wk.closing_appts_scheduled),target:g.closingSched||0,disp:fmtc(num(wk.closing_appts_scheduled),g.closingSched||0)},
+    {label:"2nd meetings held",        val:num(wk.closing_appts_held),    target:g.closingRun||0,  disp:fmtc(num(wk.closing_appts_held),g.closingRun||0)},
     {label:"New business submitted",   val:st.nbSub,                      target:g.nbSub||0,       disp:fmtc(st.nbSub,g.nbSub||0)},
     {label:"New business closed",      val:st.nbClosed,                   target:g.nbClosed||0,    disp:fmtc(st.nbClosed,g.nbClosed||0)},
-    {label:"Premium closed",           val:st.premClosed,                 target:g.closePremium||0,disp:money(st.premClosed)+" / "+money(g.closePremium||0), money:true}
+    {label:"Premium closed",           val:st.premClosed,                 target:g.closePremium||0,disp:money(st.premClosed)+" / "+money(g.closePremium||0), money:true},
+    {label:"Referrals gathered",       val:num(wk.referrals_gathered),    target:g.referrals||0,   disp:fmtc(num(wk.referrals_gathered),g.referrals||0)}
   ];
   let met=0;
   const goalsHtml = rows.map(function(r){
@@ -1020,11 +1021,12 @@ function renderTeam(week){
       num(wk.closing_appts_held)>=(g.closingRun||0)&&g.closingRun,
       st.nbSub>=(g.nbSub||0)&&g.nbSub,
       st.nbClosed>=(g.nbClosed||0)&&g.nbClosed,
-      st.premClosed>=(g.closePremium||0)&&g.closePremium
+      st.premClosed>=(g.closePremium||0)&&g.closePremium,
+      num(wk.referrals_gathered)>=(g.referrals||0)&&g.referrals
     ].filter(Boolean).length;
-    const ok = goalsHit>=8;
+    const ok = goalsHit>=9;
     return '<tr><td>'+esc(p)+'</td>'+
-      '<td><span class="pill '+(ok?'good':'warn')+'">'+goalsHit+'/8</span></td>'+
+      '<td><span class="pill '+(ok?'good':'warn')+'">'+goalsHit+'/9</span></td>'+
       '<td>'+st.opp+'</td><td>'+st.nbSub+'</td><td>'+st.nbClosed+'</td>'+
       '<td>'+money(st.premClosed)+'</td><td>'+money(st.fycClosed)+'</td><td>'+money(st.aumTotal)+'</td></tr>';
   }).join("");
