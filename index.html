@@ -1873,16 +1873,37 @@ $("btnPrint").addEventListener("click", () => {
 /* ── Phase 2: Shared Team Cases (live) ─────────────────────── */
 const CASES_ENDPOINT = "https://script.google.com/macros/s/AKfycbyBkStY31dgbEIkVCMFcgfFtM_LbVAtOCrDnzw9tDYIeK7H8cL5xdsTJkBlxZGnaQTN/exec";
 
-function jsonpGetCases(week, cb){
-  const name = "rwg_cb_" + Math.random().toString(36).slice(2);
+// JSONP read with one automatic retry.
+// Apps Script is slow to wake (a cold start can run well past 10s) and occasionally
+// answers the googleusercontent hop with a 404. Two rules keep that from surfacing:
+//   1. The callback is never removed from window while a reply may still be coming.
+//      Deleting it meant a late reply ran rwg_cb_xxx(...) against nothing and threw
+//      "rwg_cb_xxx is not defined" in the console.
+//   2. The first failure is retried quietly before the caller ever hears about it.
+function jsonpGetCases(week, cb, attempt){
+  const tries  = attempt || 1;
+  const name   = "rwg_cb_" + Math.random().toString(36).slice(2) + tries;
   const script = document.createElement("script");
-  let done = false;
-  function cleanup(){ try{ delete window[name]; }catch(e){ window[name]=undefined; } if(script.parentNode) script.parentNode.removeChild(script); }
-  window[name] = function(data){ done=true; cleanup(); cb(data); };
-  script.onerror = function(){ if(!done){ cleanup(); cb({ok:false,error:"network"}); } };
+  let settled  = false;              // true once cb has been called (or a retry took over)
+  function drop(){ if(script.parentNode) script.parentNode.removeChild(script); }
+  function finish(resp){
+    if(settled) return;              // late reply after a timeout lands here and stops
+    settled = true;
+    if(!resp.ok && tries === 1){     // one quiet retry, the caller sees nothing
+      drop();
+      setTimeout(function(){ jsonpGetCases(week, cb, 2); }, 1200);
+      return;
+    }
+    drop();
+    cb(resp);
+  }
+  window[name] = function(data){ finish(data || {ok:false, error:"empty"}); };
+  script.onerror = function(){ finish({ok:false, error:"network"}); };
   script.src = CASES_ENDPOINT + "?action=getCases&week=" + encodeURIComponent(week) + "&callback=" + name + "&_=" + Date.now();
   document.body.appendChild(script);
-  setTimeout(function(){ if(!done){ cleanup(); cb({ok:false,error:"timeout"}); } }, 12000);
+  setTimeout(function(){ finish({ok:false, error:"timeout"}); }, 25000);
+  // Release the global long after any reply could still be in flight.
+  setTimeout(function(){ try{ delete window[name]; }catch(e){ window[name]=undefined; } }, 120000);
 }
 
 function postCase(payload, done){
@@ -2030,7 +2051,7 @@ function postCase(payload, done){
     // Load every case (any week), so a case opened earlier but advanced THIS week still shows
     // and counts here. The list shows the selected week (or everything, if "View all" is on).
     jsonpGetCases("", function(resp){
-      if(!resp || !resp.ok){ statusEl.textContent="Could not load (check the connection)."; return; }
+      if(!resp || !resp.ok){ statusEl.textContent="Couldn't reach the server. Tap Load again. If it keeps failing, sign out of any extra Google accounts or try a private window."; return; }
       window.allCases = resp.cases || [];
       render(casesToShow());
     });
@@ -2435,7 +2456,7 @@ function postCase(payload, done){
     postCase({ action:"setCaseWeeks", record_id:editingId, passphrase:PARTNER_PASSPHRASE,
                opened_week:opened, submitted_week:submitted, closed_week:closed }, function(ok){
       if(ok){ if(s) s.textContent="Weeks corrected."; resetAddForm(); document.getElementById("tcAddStatus").textContent=""; setTimeout(load, 900); }
-      else { if(s) s.textContent="Could not apply (check the connection)."; }
+      else { if(s) s.textContent="Couldn't reach the server. Try again in a moment."; }
     });
   });
 
