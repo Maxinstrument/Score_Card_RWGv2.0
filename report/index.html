@@ -392,23 +392,45 @@ function coCredit(c){
 function firmShare(agent){ return FIRM_SHARE[agent]!=null ? FIRM_SHARE[agent] : 1.0; }
 function ymd(v){ return String(v||"").slice(0,10); }
 
-/* ── JSONP fetch ─────────────────────────────────────────── */
-function jsonp(action, cb){
-  const name = "rwg_rep_" + Math.random().toString(36).slice(2);
+/* ── JSONP fetch ─────────────────────────────────────────────
+   Same hardened loader as the main scorecard page. Apps Script fails in
+   bursts on bad days (404s, hangs, dropped connections), so:
+   1. Failures retry quietly with growing delays (1.5s, then 6s; 3 attempts
+      total) so the later tries land outside the bad burst.
+   2. The callback is never removed from window while a reply may still be
+      coming. Deleting it made a slow-but-successful reply throw
+      "rwg_rep_xxx is not defined" and show the error anyway. */
+var JSONP_RETRY_DELAYS = [1500, 6000];
+function jsonp(action, cb, attempt){
+  const tries = attempt || 1;
+  const name  = "rwg_rep_" + Math.random().toString(36).slice(2) + tries;
   const s = document.createElement("script");
-  let done=false;
-  function cleanup(){ try{ delete window[name]; }catch(e){ window[name]=undefined; } if(s.parentNode) s.parentNode.removeChild(s); }
-  window[name] = function(d){ done=true; cleanup(); cb(d); };
-  s.onerror = function(){ if(!done){ cleanup(); cb({ok:false}); } };
+  let settled = false;               // true once cb has been called (or a retry took over)
+  function drop(){ if(s.parentNode) s.parentNode.removeChild(s); }
+  function finish(resp){
+    if(settled) return;              // late reply after a timeout lands here and stops
+    settled = true;
+    if(!resp.ok && tries <= JSONP_RETRY_DELAYS.length){  // quiet retry, the caller sees nothing
+      drop();
+      setTimeout(function(){ jsonp(action, cb, tries+1); }, JSONP_RETRY_DELAYS[tries-1]);
+      return;
+    }
+    drop();
+    cb(resp);
+  }
+  window[name] = function(d){ finish(d || {ok:false, error:"empty"}); };
+  s.onerror = function(){ finish({ok:false, error:"network"}); };
   s.src = ENDPOINT + "?action=" + action + "&callback=" + name + "&_=" + Date.now();
   document.body.appendChild(s);
-  setTimeout(function(){ if(!done){ cleanup(); cb({ok:false,error:"timeout"}); } }, 15000);
+  setTimeout(function(){ finish({ok:false, error:"timeout"}); }, 25000);
+  // Release the global long after any reply could still be in flight.
+  setTimeout(function(){ try{ delete window[name]; }catch(e){ window[name]=undefined; } }, 120000);
 }
 
 function loadData(){
   document.getElementById("report-body").innerHTML = '<div class="loading">Loading the team\'s numbers…</div>';
   jsonp("getReport", function(resp){
-    if(!resp || !resp.ok){ document.getElementById("report-body").innerHTML = '<div class="loading">Could not load. Check the connection and refresh.</div>'; return; }
+    if(!resp || !resp.ok){ document.getElementById("report-body").innerHTML = '<div class="loading">Couldn\'t reach the server after several tries. <a href="#" onclick="loadData();return false;" style="color:inherit;font-weight:600;">Tap here to retry</a>.</div>'; return; }
     DATA.cases  = resp.cases  || [];
     DATA.weekly = resp.weekly || [];
     buildControls();
