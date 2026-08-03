@@ -1873,13 +1873,16 @@ $("btnPrint").addEventListener("click", () => {
 /* ── Phase 2: Shared Team Cases (live) ─────────────────────── */
 const CASES_ENDPOINT = "https://script.google.com/macros/s/AKfycbyBkStY31dgbEIkVCMFcgfFtM_LbVAtOCrDnzw9tDYIeK7H8cL5xdsTJkBlxZGnaQTN/exec";
 
-// JSONP read with one automatic retry.
-// Apps Script is slow to wake (a cold start can run well past 10s) and occasionally
-// answers the googleusercontent hop with a 404. Two rules keep that from surfacing:
+// JSONP read with automatic retries.
+// Apps Script is slow to wake (a cold start can run well past 10s) and on bad days
+// fails in bursts: 404s on the googleusercontent hop, hangs, dropped connections.
+// Two rules keep that from surfacing:
 //   1. The callback is never removed from window while a reply may still be coming.
 //      Deleting it meant a late reply ran rwg_cb_xxx(...) against nothing and threw
 //      "rwg_cb_xxx is not defined" in the console.
-//   2. The first failure is retried quietly before the caller ever hears about it.
+//   2. Failures are retried quietly before the caller ever hears about one. The
+//      delays grow (1.5s, then 6s) so the later tries land outside the bad burst.
+var JSONP_RETRY_DELAYS = [1500, 6000];   // after attempts 1 and 2; 3 attempts total
 function jsonpGetCases(week, cb, attempt){
   const tries  = attempt || 1;
   const name   = "rwg_cb_" + Math.random().toString(36).slice(2) + tries;
@@ -1889,9 +1892,9 @@ function jsonpGetCases(week, cb, attempt){
   function finish(resp){
     if(settled) return;              // late reply after a timeout lands here and stops
     settled = true;
-    if(!resp.ok && tries === 1){     // one quiet retry, the caller sees nothing
+    if(!resp.ok && tries <= JSONP_RETRY_DELAYS.length){  // quiet retry, the caller sees nothing
       drop();
-      setTimeout(function(){ jsonpGetCases(week, cb, 2); }, 1200);
+      setTimeout(function(){ jsonpGetCases(week, cb, tries+1); }, JSONP_RETRY_DELAYS[tries-1]);
       return;
     }
     drop();
